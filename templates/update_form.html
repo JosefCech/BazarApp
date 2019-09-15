@@ -1,0 +1,100 @@
+<html>
+<head>
+{% if not updated_item %}
+<title>New item</title>
+{% else %}
+<title> Update item : {{ updated_item.name }} </title>
+{% endif %}
+     <link rel="stylesheet" type="text/css"
+              href="/static/css/item-form.css"/>
+<script type="text/javascript">
+//auto expand textarea
+function adjust_textarea(h) {
+    h.style.height = "20px";
+    h.style.height = (h.scrollHeight)+"px";
+}
+</script>
+</head>
+<body>
+{% if  updated_item %}
+<p>
+    Created at : {{ updated_item.rest.get('published_date') }}
+</p>
+{% endif %}
+<form  class="item-form-style" action="" method="post" enctype="multipart/form-data">
+     <ul>
+ 
+ <li>
+     {{ form.name.label }}
+       {{ form.name }}
+ </li>
+
+<li>
+    {{ form.short_description.label }} {{ form.short_description }}</li>
+
+
+<li>
+    {{ form.description.label }} {{ form.description }}</li>
+
+
+<li class="number">
+    {{ form.quantity.label }} {{ form.quantity }}</li>
+
+
+    <li class="number">
+    {{ form.actual_cost.label }} {{ form.actual_cost }}</li>
+
+<li class="number">
+    {{ form.cost.label }} {{ form.cost }}</li>
+<li class="number">
+    {{ form.revenue.label }} {{ form.revenue }}</li>
+
+<li >
+    {{ form.facebook_link.label }} {{ form.facebook_link }}
+    {% if  form.facebook_link.value %}
+    <span><a href="{{ form.facebook_link.value }}" >{{ form.facebook_link.label }}</a> </span>
+    {% endif %}
+</li>
+
+<li >
+    {{ form.bluehorse_link.label }} {{ form.bluehorse_link }}
+    {% if  form.facebook_link.value %}
+    <span><a href="{{ form.bluehorse_link.value }}" >{{ form.bluehorse_link.label }}</a> </span>
+    {% endif %}
+</li>
+<li >
+    {{ form.vinted_link.label }} {{ form.vinted_link }}
+    {% if  form.facebook_link.value %}
+    <span><a href="{{ form.vinted_link.value }}" >{{ form.vinted_link.label }}</a> </span>
+    {% endif %}
+</li>
+
+<li >
+    {{ form.reserved.label }} {{ form.reserved }}</li>
+
+<li>
+    {{ form.photos.label }} {{ form.photos }}</li>
+
+    </ul>
+{% if  updated_item %}
+<ul>
+
+                    {% for image in updated_item.rest['photos'] %}
+                    <span>
+                    <div class="image">
+                        <img width="200" src="/static/images/{{ image }}" />
+                        <a href="item/{{ updated_item.id }}/delete/{{ image }}">Delete</a>
+                    </div>
+                    </span>
+                    {% endfor %}1
+</ul>
+{% endif %}
+{% if updated_item %}
+<a href="/{{ updated_item.id }}/sold" > Sold </a>
+{% endif %}
+<div class="input submit">
+    <button id="submitbtn" type="submit" name="Submit" value="Submit" default="Save">Save</button>
+</div>
+</form>
+</body>
+</html>

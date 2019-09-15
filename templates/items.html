@@ -1,0 +1,52 @@
+<!-- layout.html -->
+<html>
+    <head>
+        <title>Items</title>
+	<link rel="stylesheet" type="text/css" href="static/item-table.css">
+
+    </head>
+    <body>
+      <div id="page">
+    <a href="{{ url_for('item_form.item_new') }}"> New item </a>
+
+          <table id="cart" class="responstable" >
+        <thead>
+          <tr class="row100 head">
+            <th >Photo</th>
+            <th >Qty</th>
+            <th >Product</th>
+            <th >Requested price</th>
+            <th >Given price</th>
+            <th >&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+             {% for item in items %}
+                 <tr>
+                 <td > photo missing </td>
+                 <td> 1 </td>
+                 <td>
+                    <a href="items/update/{{ item.id }}">{{ item.name }}</a>
+                </td>
+                 <td >
+                   {{ item.rest.get('quantity') if not None else 0 }}
+                 </td>
+                 <td  >
+                     {{ item.rest.get('cost') if not None else 0 }}
+                 </td>
+                 </tr>
+             {% endfor %}
+        </tbody>
+      </table>
+          <a href="{{ url_for('item_form.item_new') }}"> New item </a>
+
+        </div>
+            </div>
+        </div>
+        </div>
+      </div>
+     <footer>
+                <div class="left">2019</div>
+            </footer>
+    </body>
+</html>

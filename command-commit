@@ -1,0 +1,1 @@
+$ ssh-agent bash -c 'ssh-add /c/Users/josef.cech/.ssh/id_rsa_private_josef ; git push origin docker '

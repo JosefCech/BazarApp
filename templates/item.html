@@ -1,0 +1,31 @@
+<!-- layout.html -->
+<html>
+    <head>
+        <title>Fancy website</title>
+        <link rel="stylesheet" type="text/css"
+              href="/static/css/item-style.css"/>
+    </head>
+    <body>
+        <div id="page">
+            <table id="item">
+                <thead></thead>
+                <tbody>
+                    <tr>
+                        <td class="first"> Name : </td>
+                        <td class="second">{{ item.name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="first"> Description : </td>
+                        <td class="second">{{ item.rest.get('description')   }}</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                <tr><td><a href="update/{{ item.id }}">Update item</a></td></tr>
+                </tfoot>
+            </table>
+        </div>
+            <footer>
+                <div class="left">2019</div>
+            </footer>
+    </body>
+</html>
