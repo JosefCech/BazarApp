@@ -1,0 +1,11 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "bazaar-app-sam"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-fckq7sw4gbth"
+s3_prefix = "bazaar-app-sam"
+region = "eu-west-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+

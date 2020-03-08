@@ -1,0 +1,22 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest="*"
+
+[packages]
+flask-jwt-extended="*"
+Flask = "*"
+#Flask-JWT = "*"
+#Flask-Restful="*"
+flask_restplus="*"
+pydantic="*"
+flask_sqlalchemy="*"
+mysql-connector='*'
+mysql-connector-python="*"
+pymysql="*"
+
+[requires]
+python_version = "3.8"

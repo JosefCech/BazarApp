@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+.form-style-7{
+	max-width:400px;
+	margin:50px auto;
+	background:#fff;
+	border-radius:2px;
+	padding:20px;
+	font-family: Georgia, "Times New Roman", Times, serif;
+}
+.form-style-7 h1{
+	display: block;
+	text-align: center;
+	padding: 0;
+	margin: 0px 0px 20px 0px;
+	color: #5C5C5C;
+	font-size:x-large;
+}
+.form-style-7 ul{
+	list-style:none;
+	padding:0;
+	margin:0;
+}
+.form-style-7 li{
+	display: block;
+	padding: 9px;
+	border:1px solid #DDDDDD;
+	margin-bottom: 30px;
+	border-radius: 3px;
+}
+.form-style-7 li:last-child{
+	border:none;
+	margin-bottom: 0px;
+	text-align: center;
+}
+.form-style-7 li > label{
+	display: block;
+	float: left;
+	margin-top: -19px;
+	background: #FFFFFF;
+	height: 14px;
+	padding: 2px 5px 2px 5px;
+	color: #000000;
+	font-size: 14px;
+	overflow: hidden;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.form-style-7 input[type="text"],
+.form-style-7 input[type="date"],
+.form-style-7 input[type="datetime"],
+.form-style-7 input[type="email"],
+.form-style-7 input[type="number"],
+.form-style-7 input[type="search"],
+.form-style-7 input[type="time"],
+.form-style-7 input[type="url"],
+.form-style-7 input[type="password"],
+.form-style-7 textarea,
+.form-style-7 select
+{
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	width: 100%;
+	display: block;
+	outline: none;
+	border: none;
+	height: 25px;
+	line-height: 25px;
+	font-size: 16px;
+	padding: 0;
+	font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+.form-style-7 textarea {
+  height:100px
+}
+
+.form-style-7 input[type="text"]:focus,
+.form-style-7 input[type="date"]:focus,
+.form-style-7 input[type="datetime"]:focus,
+.form-style-7 input[type="email"]:focus,
+.form-style-7 input[type="number"]:focus,
+.form-style-7 input[type="search"]:focus,
+.form-style-7 input[type="time"]:focus,
+.form-style-7 input[type="url"]:focus,
+.form-style-7 input[type="password"]:focus,
+.form-style-7 textarea:focus,
+.form-style-7 select:focus
+{
+}
+.form-style-7 li > span{
+	background: #000000;
+	display: block;
+	padding: 3px;
+	margin: 0 -9px -9px -9px;
+	text-align: center;
+	color: #ffffff;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+.form-style-7 textarea{
+	resize:none;
+}
+.form-style-7 input[type="submit"],
+.form-style-7 input[type="button"]{
+	background: #2471FF;
+	border: none;
+	padding: 10px 20px 10px 20px;
+	border-bottom: 3px solid #5994FF;
+	border-radius: 3px;
+	color: #D2E2FF;
+}
+.form-style-7 input[type="submit"]:hover,
+.form-style-7 input[type="button"]:hover{
+	background: #6B9FFF;
+	color:#fff;
+}
+
+
+
+
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+</head>
+<body>
+<form class="form-style-7">
+    % for field in fields:
+    <li id="li_${field}">
+        <label for="${field}">${lang.get(field)}</label>
+        % if fields_data.get(field) and fields_data.get(field).get('type') == 'select' :
+        <select name="${field}" id="${field}">
+            %for option in fields_data[field]['values']:
+            <option value="${option}"
+                    % if option== fields_data[field]['default'] :
+            selected="selected"
+            % endif
+            >${lang.get(option)}</option>
+
+            %endfor
+        </select>
+        % elif fields_data.get(field) and fields_data.get(field).get('type') == 'textarea':
+        <textarea name="${field}" id="${field}" rows="5" cols="33"></textarea>
+        % else :
+        <input type="text" name="${field}" id="${field}"
+               % if fields_data.get(field) and fields_data.get(field).get('default'):
+                    placeholder="${fields_data.get(field).get('default')}"
+                %endif
+        maxlength="100">
+        % endif
+        <span> Enter valid value of ${field}</span>
+    </li>
+    %endfor
+    <li>
+        <input type="submit" value="Send This">
+    </li>
+    </ul>
+</form>
+</body>
+<script type="text/javascript">
+//auto expand textarea
+function adjust_textarea(h) {
+    h.style.height = "20px";
+    h.style.height = (h.scrollHeight)+"px";
+}
+
+function generateUUID() { // Public Domain/MIT
+    var d = new Date().getTime();//Timestamp
+    var d2 = (performance && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16;//random number between 0 and 16
+        if(d > 0){//Use timestamp until depleted
+            r = (d + r)%16 | 0;
+            d = Math.floor(d/16);
+        } else {//Use microseconds since page-load if supported
+            r = (d2 + r)%16 | 0;
+            d2 = Math.floor(d2/16);
+        }
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+}
+
+var API_GATEWAY_ENDPOINT = 'https://2m95fmejk8.execute-api.eu-west-1.amazonaws.com/v0/advertisement';
+
+function show_message(type, message) {
+    $('#message').empty().append(
+        $('<div class="alert alert-' + type + '" role="alert">').text(message)
+    );
+}
+
+$(function() {
+    $('form').submit(function(event) {
+        event.preventDefault();
+        request_obj = {
+              % for field in fields:
+                ${field}: $('#${field}').val(),
+              %endfor
+              id : generateUUID()
+            }
+        $.each(request_obj, function(key, value){
+            if (value === "" || value === null){
+                delete request_obj[key];
+            }
+         });
+
+        $.ajax({
+            url: API_GATEWAY_ENDPOINT,
+            method: 'post',
+            data: JSON.stringify(request_obj),
+            contentType: 'application/json'
+        })
+        .done(function(data) {
+            if(data.success == true) {
+                show_message('success', 'Your inquiry has been sent!!');
+            } else {
+                show_message('danger', data.message);
+            }
+        })
+        .fail(function(data) {
+            show_message('danger', 'Failed to send inquiry.')
+        });
+    });
+
+
+    $('#show_additional_fields').change(function(e) {
+        change_visibility($(this)[0].checked)
+    });
+
+
+    $('#originalPrice').keyup(function() {
+       $('#boughtPrice').val($(this).val())
+    });
+
+
+
+
+
+});
+
+function change_visibility(checked) {
+    if (checked == true) {
+        % for field in fields:
+            % if fields_data.get(field) and fields_data.get(field).get('hidden'):
+                $('#li_${field}').show()
+            %endif
+        %endfor
+                $('#givenPrice').val($('#advertisedPrice').val())
+      }
+    else {
+     % for field in fields:
+            % if fields_data.get(field) and fields_data.get(field).get('hidden'):
+                $("#li_${field}").hide()
+            %endif
+     %endfor
+      $('#givenPrice').val(0)
+    }
+ }
+
+
+function validateDate(dateString) {
+ if (dateString == "") {
+     return 1
+     }
+
+    else {
+     var date_regex = /^(0[1-9]|1\d|2\d|3[01])\/(0[1-9]|1[0-2])\/(19|20)\d{2}$/;
+        if (!(date_regex.test(dateString))) {
+            alert("Not valid date " + dateString)
+            return 0
+         }
+    }
+    return 1
+}
+
+ % for field in fields:
+            % if fields_data.get(field) and fields_data.get(field).get('type') == "date":
+                $("#${field}").focusout(function(){
+                    var dateString = $(this).val()
+                    if (validateDate(dateString)==0)
+                       $(this).focus()
+                });
+             %endif
+  %endfor
+
+change_visibility(false)
+
+
+</script>
+</html>

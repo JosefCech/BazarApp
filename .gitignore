@@ -1,0 +1,7 @@
+.aws-sam/*
+.idea/*
+__pycache__/*
+.venv
+outpout/*
+output*
+
