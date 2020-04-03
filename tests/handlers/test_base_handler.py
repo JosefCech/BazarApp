@@ -75,7 +75,7 @@ post_simple_event = {'resource': '/lambda', 'path': '/lambda', 'httpMethod': 'PO
                                                      'accessKey': 'ASIAQ2M2RD7DMJE4K3NB',
                                                      'cognitoAuthenticationProvider': None, 'user': '056695529414'},
                                         'domainName': 'testPrefix.testDomainName', 'apiId': 's0ut9dmul2'},
-                     'body': '{   \r\n    "id": "dummy_id",\r\n    "name": "dummy_name",\r\n    "item_type": "dummy_item_type",\r\n    "item_subtype": "dummy_subtype",\r\n    "season": "season1",\r\n    "color": "color1",\r\n    "original_price": 10.25,\r\n    "requested_price": 10.25\r\n}',
+                     'body': '{   \r\n    "id": "dummy_id",\r\n    "name": "dummy_name",\r\n    "item_type": "dummy_item_type",\r\n    "item_subtype": "dummy_subtype",\r\n    "season": "season1",\r\n    "color": "color1",\r\n    "originalPrice": 10.25,\r\n    "requestedPrice": 10.25\r\n}',
                      'isBase64Encoded': False}
 executed = None
 

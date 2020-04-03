@@ -54,25 +54,35 @@ class StoreItemRequest(BaseModel):
     brand: str = 'undefined'
     season: SeasonEnum = SeasonEnum.UNDEFINED
     size: str = 'undefined'
-    originalPrice: float
-    boughtPrice: float
+    originalPrice: Optional[float]
+    boughtPrice: Optional[float]
 
 
 class StoreItemResource(StoreItemRequest):
     createdAt : str
 
 
-class AdvertisementRequest(StoreItemRequest):
+class AdvertisementRequest(BaseModel):
+    id: str
+    name: str
+    categorySex: CategorySex = CategorySex.NA
+    categoryType: CategoryType = CategoryType.OTHER
+    categorySubtype: str = 'undefined'
+    brand: str = 'undefined'
+    season: SeasonEnum = SeasonEnum.UNDEFINED
+    size: str = 'undefined'
+    originalPrice: Optional[float]
+    boughtPrice: Optional[float]
     description: Optional[str]
     publishedDate: Optional[str]
     soldDate: Optional[str]
-    postage: float = 0
-    advertisedPrice: float
-    givenPrice: float = 0
+    postage: Optional[float] = 0
+    advertisedPrice: Optional[float]
+    givenPrice: Optional[float] = 0
 
 
 class AdvertisementResource(AdvertisementRequest):
-    createAt: str
+    createAt: Optional[str]
     items: Optional[list]
 
 

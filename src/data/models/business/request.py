@@ -19,3 +19,16 @@ class Response(BaseModel):
     body: str
     statusCode: int
     headers: Dict[str, List[str]] = None
+
+
+class WebRequest:
+    endpoint: str
+    path: Optional[dict]
+    method: str
+    parameters: Optional[dict]
+    body: Optional[dict]
+    headers: Optional[dict]
+    event: dict
+
+    def key(self):
+        return f'{self.endpoint}-{self.method}'

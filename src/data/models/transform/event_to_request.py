@@ -1,4 +1,4 @@
-from src.data.models.business.request import Request
+from src.data.models.business.request import Request, WebRequest
 
 
 def event_to_request(event):
@@ -15,3 +15,16 @@ def event_to_request(event):
     body = event['body']
     headers = event['headers']
     return Request(endpoint=endpoint, method=method, parameters=parameters, body=body, headers=headers, event=event)
+
+
+def event_to_web_request(event):
+    event_body = event['body']
+    endpoint_pattern = event_body['resource-path']
+    path = event_body['params'].get('path')
+    method = event_body['httpMethod']
+    parameters = event_body['params'].get('querystring')
+    parameters = {} if not parameters else parameters
+    body = event_body['body-json']
+    headers = event_body['params'].get('header')
+    return WebRequest(endpoint=endpoint_pattern, path=path, method=method, parameters=parameters, body=body,
+                      headers=headers, event=event_body)

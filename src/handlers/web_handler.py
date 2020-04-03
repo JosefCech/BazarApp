@@ -1,15 +1,37 @@
 from mako.template import Template
+from punq import Container
 
 from src.data.models.business.advertisement_resource import AdvertisementRequest, CategorySex, CategoryType, SeasonEnum, \
     StoreItemRequest
+from src.data.models.transform.event_to_request import event_to_web_request
 from src.handlers.base_handler import endpoint, BaseHandler
 from src.localization.cz.advertisement import lang
+from src.web.controllers.advertisement import AdvertisementController
 
 
 class WebHandler(BaseHandler):
     def __init__(self, template_prefix="./"):
         super().__init__()
         self._template_prefix = template_prefix
+        self._container = Container()
+        self._container.register(AdvertisementController, AdvertisementController)
+
+
+    def handle(self, event, context):
+        request = event_to_web_request(event)
+        controller_name = request.path["controller"] + 'Controller'
+        view = request.path["view"] if request.path["view"] else "base_view"
+        method =
+
+        controller = self._container.resolve(controller_name)
+        kwargs = {}
+        template = getattr(controller, view)(**kwargs)
+
+        return self.make_response(template, status_code=200, headers=None)
+
+
+
+
 
     @endpoint("/web", methods=["GET"])
     def index(self):

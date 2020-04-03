@@ -7,12 +7,12 @@ class AdvertisementsAnalytics():
         self._calculation = calculation
 
     def create_analytics(self, items):
-        full_data = [item for item in items if item.original_price and item.bought_price and item.given_price]
+        full_data = [item for item in items if item.originalPrice and item.boughtPrice and item.givenPrice]
 
         metrics = AdvertisementsMetrics(
             sumGivenPrice=self._calculation.sum_of_given_prices(full_data),
             sumBoughtPrice=self._calculation.sum_of_bought_prices(full_data),
-            sumOriginalPrice=self._calculation.sum_of_orginal_prices(full_data),
+            sumOriginalPrice=self._calculation.sum_of_original_prices(full_data),
             returnValueRatio=self._calculation.average_return_back_in_percent(full_data),
             lossValueRatio=self._calculation.average_loss_against_new_in_percent(full_data)
         )
@@ -25,9 +25,10 @@ class AdvertisementsAnalytics():
             metrics_subset = metrics
             metrics_total = AdvertisementsMetrics(
                 sumGivenPrice=self._calculation.sum_of_given_prices(items),
-                sumBoughtPrice=self._calculation.sum_of_bought_prices(items, ratio=metrics_subset.returnValueRatio),
-                sumOriginalPrice=self._calculation.sum_of_orginal_prices(items,
-                                                                         ratio=metrics_subset.lossValueRatio),
+                sumBoughtPrice=self._calculation.sum_of_bought_prices(items,
+                                                                      ratio=metrics_subset.returnValueRatio if  metrics_subset.returnValueRatio else 1),
+                sumOriginalPrice=self._calculation.sum_of_original_prices(items,
+                                                                          ratio=metrics_subset.lossValueRatio if metrics_subset.lossValueRatio else 1),
                 returnValueRatio=metrics_subset.returnValueRatio,
                 lossValueRatio=metrics_subset.lossValueRatio
             )
@@ -36,7 +37,7 @@ class AdvertisementsAnalytics():
             totalCount=len(items),
             usedForCalculation=len(full_data),
             totalSumGivenPrice=self._calculation.sum_of_given_prices(items),
-            metrics_on_subset=metrics_subset,
-            metrics_on_total=metrics_total,
+            metricsOnSubset=metrics_subset,
+            metricsOnTotal=metrics_total,
         )
-        return  response
+        return response

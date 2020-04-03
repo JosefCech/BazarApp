@@ -9,231 +9,663 @@ Resources:
     Properties:
       ApiKeySourceType: HEADER
       Description: An API Gateway with a Lambda Integration
+      Body:
+        swagger: 2.0
+        info:
+          version: 0.0.1
+          title: API
+        basePath: /api
+        schemes:
+          - "https"
+          - "http"
+        paths:
+          /advertisement:
+            post:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                passthroughBehavior: when_no_match
+                type: AWS_PROXY
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
+                requestTemplates:
+                  application/json: $input.body
+              tags:
+                - "advertisement"
+              description: "CRUD for advertisement"
+              consumes:
+                - "application/json"
+              produces:
+                - "application/json"
+              responses:
+                '200' :
+                  description: resource
+                  schema:
+                    type : object
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                passthroughBehavior: when_no_match
+                type: AWS_PROXY
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
+                requestTemplates:
+                  application/json: $input.body
+              tags:
+                - "advertisement"
+              description: "CRUD for advertisement"
+              consumes:
+                - "application/json"
+              produces:
+                - "application/json"
+              responses:
+                '200':
+                  description: resource
+                  schema:
+                    type: object
+          /advertisement/analytics:
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                passthroughBehavior: when_no_match
+                type: AWS_PROXY
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
+                requestTemplates:
+                  application/json: $input.body
+              tags:
+                - "advertisement"
+              description: "CRUD for advertisement"
+              consumes:
+                - "application/json"
+              produces:
+                - "application/json"
+              responses:
+                '200':
+                  description: resource
+                  schema:
+                    type: object
+          /advertisement/{id}:
+            put:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                passthroughBehavior: when_no_match
+                type: AWS_PROXY
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
+                requestTemplates:
+                  application/json: $input.body
+              tags:
+                - "advertisement"
+              description: "CRUD for advertisement"
+              consumes:
+                - "application/json"
+              produces:
+                - "application/json"
+              responses:
+                '200':
+                  description: resource
+                  schema:
+                    type: object
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                passthroughBehavior: when_no_match
+                type: AWS_PROXY
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
+                requestTemplates:
+                  application/json: $input.body
+              tags:
+                - "advertisement"
+              description: "CRUD for advertisement"
+              consumes:
+                - "application/json"
+              produces:
+                - "application/json"
+              responses:
+                '200':
+                  description: resource
+                  schema:
+                    type: object
+          /storeItem:
+            post:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                passthroughBehavior: when_no_match
+                type: AWS_PROXY
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
+                requestTemplates:
+                  application/json: $input.body
+              tags:
+                - "advertisement"
+              description: "CRUD for store item"
+              consumes:
+                - "application/json"
+              produces:
+                - "application/json"
+              responses:
+                '200':
+                  description: resource
+                  schema:
+                    type: object
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                passthroughBehavior: when_no_match
+                type: AWS_PROXY
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
+                requestTemplates:
+                  application/json: $input.body
+              tags:
+                - "advertisement"
+              description: "CRUD for store item"
+              consumes:
+                - "application/json"
+              produces:
+                - "application/json"
+              responses:
+                '200':
+                  description: resource
+                  schema:
+                    type: object
+          /storeItem/{id}:
+            put:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                passthroughBehavior: when_no_match
+                type: AWS_PROXY
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
+                requestTemplates:
+                  application/json: $input.body
+              tags:
+                - "advertisement"
+              description: "CRUD for store item"
+              consumes:
+                - "application/json"
+              produces:
+                - "application/json"
+              responses:
+                '200':
+                  description: resource
+                  schema:
+                    type: object
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                passthroughBehavior: when_no_match
+                type: AWS_PROXY
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
+                requestTemplates:
+                  application/json: $input.body
+              tags:
+                - "advertisement"
+              description: "CRUD for store item"
+              consumes:
+                - "application/json"
+              produces:
+                - "application/json"
+              responses:
+                '200':
+                  description: resource
+                  schema:
+                    type: object
       EndpointConfiguration:
         Types:
           - EDGE
-      Name: adverisement-api
+      Name: bazar-api
 
-  ApiGatewayStoreItemRestApi:
+
+
+  WebGatewayAdvertisementRestApi:
     Type: AWS::ApiGateway::RestApi
+    DependsOn:
+      - BazaarServerWeb
     Properties:
       ApiKeySourceType: HEADER
       Description: An API Gateway with a Lambda Integration
+      Body:
+        swagger: 2.0
+        info:
+          version: 0.0.1
+          title: Web
+        basePath: /web
+        schemes:
+          - "https"
+          - "http"
+        paths:
+          /web:
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                passthroughBehavior: when_no_match
+                type: aws
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerWeb.Arn}/invocations'
+                requestTemplates:
+                  application/json: |
+                    #set($allParams = $input.params())
+                    {
+                    "body-json" : $input.json('$'),
+                    "params" : {
+                    #foreach($type in $allParams.keySet())
+                        #set($params = $allParams.get($type))
+                    "$type" : {
+                        #foreach($paramName in $params.keySet())
+                        "$paramName" : "$util.escapeJavaScript($params.get($paramName))"
+                            #if($foreach.hasNext),#end
+                        #end
+                    }
+                        #if($foreach.hasNext),#end
+                    #end
+                    },
+                    "stage-variables" : {
+                    #foreach($key in $stageVariables.keySet())
+                    "$key" : "$util.escapeJavaScript($stageVariables.get($key))"
+                        #if($foreach.hasNext),#end
+                    #end
+                    },
+                    "httpMethod" : "$context.httpMethod"
+                    }
+                responses:
+                  default:
+                    statusCode: 200
+                    #responseParameters:
+                     # method.response.header.Access-Control-Allow-Origin: "'*'"
+                     # method.response.header.Content-Type: "'text/html'"
+                responseTemplates:
+                  'text/hml': "$input.path('$')"
+
+              tags:
+                - "web-index"
+              description: "Index for web"
+              produces:
+                - "text/html"
+              responses:
+                '200':
+                  description: resource
+                  schema:
+                    type: object
+          /web/{controller}:
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                passthroughBehavior: when_no_match
+                type: aws
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerWeb.Arn}/invocations'
+                requestTemplates:
+                  application/json: |
+                    #set($allParams = $input.params())
+                    {
+                    "body-json" : $input.json('$'),
+                    "params" : {
+                    #foreach($type in $allParams.keySet())
+                        #set($params = $allParams.get($type))
+                    "$type" : {
+                        #foreach($paramName in $params.keySet())
+                        "$paramName" : "$util.escapeJavaScript($params.get($paramName))"
+                            #if($foreach.hasNext),#end
+                        #end
+                    }
+                        #if($foreach.hasNext),#end
+                    #end
+                    },
+                    "stage-variables" : {
+                    #foreach($key in $stageVariables.keySet())
+                    "$key" : "$util.escapeJavaScript($stageVariables.get($key))"
+                        #if($foreach.hasNext),#end
+                    #end
+                    },
+                    "httpMethod" : "$context.httpMethod"
+                    }
+                responses:
+                  default:
+                    statusCode : 200
+                    #responseParameters:
+                      #method.response.header.Access-Control-Allow-Origin: "'*'"
+                      #method.response.header.Content-Type: "'text/html'"
+                responseTemplates:
+                  'text/hml' : "$input.path('$')"
+
+              tags:
+                - "web-index"
+              description: "Index for web"
+              produces:
+                - "text/html"
+              responses:
+                '200':
+                  description: resource
+                  schema:
+                    type: object
+          /web/{controller}/{view}:
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                passthroughBehavior: WHEN_NO_TEMPLATES
+                type: aws
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerWeb.Arn}/invocations'
+                requestTemplates:
+                  application/json: |
+                    #set($allParams = $input.params())
+                    {
+                    "body-json" : $input.json('$'),
+                    "params" : {
+                    #foreach($type in $allParams.keySet())
+                        #set($params = $allParams.get($type))
+                    "$type" : {
+                        #foreach($paramName in $params.keySet())
+                        "$paramName" : "$util.escapeJavaScript($params.get($paramName))"
+                            #if($foreach.hasNext),#end
+                        #end
+                    }
+                        #if($foreach.hasNext),#end
+                    #end
+                    },
+                    "stage-variables" : {
+                    #foreach($key in $stageVariables.keySet())
+                    "$key" : "$util.escapeJavaScript($stageVariables.get($key))"
+                        #if($foreach.hasNext),#end
+                    #end
+                    },
+                    "httpMethod" : "$context.httpMethod"
+                    }
+                responses:
+                  default:
+                    statusCode: 200
+                      #responseParameters:
+                    #method.response.header.Access-Control-Allow-Origin: "'*'"
+                    #method.response.header.Content-Type: "'text/html'"
+                responseTemplates:
+                  'text/hml': "$input.path('$')"
+
+              tags:
+                - "web-index"
+              description: "Index for web"
+              produces:
+                - "text/html"
+              responses:
+                '200':
+                  description: resource
+                  schema:
+                    type: object
       EndpointConfiguration:
         Types:
           - EDGE
-      Name: store-item-api
+      Name: bazar-web
 
-  ApiGatewayWebIndexResource:
-    Type: AWS::ApiGateway::Resource
+  ConfigAPILambdaPermission:
+    Type: "AWS::Lambda::Permission"
+    DependsOn:
+    - ApiGatewayAdvertisementRestApi
+    - BazaarServerApp
     Properties:
-      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
-      PathPart: 'web'
-      RestApiId: !Ref ApiGatewayRestApi
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref BazaarServerApp
+      Principal: apigateway.amazonaws.com
 
-  ApiGatewayAdvertisementResource:
-    Type: AWS::ApiGateway::Resource
+  ConfigWebLambdaPermission:
+    Type: "AWS::Lambda::Permission"
+    DependsOn:
+      - WebGatewayAdvertisementRestApi
+      - BazaarServerWeb
     Properties:
-      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
-      PathPart: 'advertisement'
-      RestApiId: !Ref ApiGatewayRestApi
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref BazaarServerWeb
+      Principal: apigateway.amazonaws.com
 
-  ApiGatewayStoreItemResource:
-    Type: AWS::ApiGateway::Resource
-    Properties:
-      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
-      PathPart: 'storeItem'
-      RestApiId: !Ref ApiGatewayRestApi
 
-  ApiGatewayStoreItemIdResource:
-    Type: AWS::ApiGateway::Resource
-    Properties:
-      ParentId: !Ref ApiGatewayStoreItemResource
-      PathPart: '{id}'
-      RestApiId: !Ref ApiGatewayRestApi
-
-  ApiGatewayAdvertisementIdResource:
-    Type: AWS::ApiGateway::Resource
-    Properties:
-      ParentId: !Ref ApiGatewayAdvertisementResource
-      PathPart: '{id}'
-      RestApiId: !Ref ApiGatewayRestApi
-
-  ApiGatewayAdvertisimentsAnalyticsResource:
-    Type: AWS::ApiGateway::Resource
-    Properties:
-      ParentId: !Ref ApiGatewayAdvertisementResource
-      PathPart: 'analytics'
-      RestApiId: !Ref ApiGatewayRestApi
-
-  ApiGatewayAdvertisementMethodPost:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      ApiKeyRequired: false
-      AuthorizationType: NONE
-      HttpMethod: POST
-      Integration:
-        ConnectionType: INTERNET
-        Credentials: !GetAtt ApiGatewayIamRole.Arn
-        IntegrationHttpMethod: POST
-        PassthroughBehavior: WHEN_NO_MATCH
-        TimeoutInMillis: 29000
-        Type: AWS_PROXY
-        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
-      OperationName: 'lambda'
-      ResourceId: !Ref ApiGatewayAdvertisementResource
-      RestApiId: !Ref ApiGatewayAdvertisementRestApi
-
-  ApiGatewayAdvertisementMethodGetStore:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      ApiKeyRequired: false
-      AuthorizationType: NONE
-      HttpMethod: GET
-      Integration:
-        ConnectionType: INTERNET
-        Credentials: !GetAtt ApiGatewayIamRole.Arn
-        IntegrationHttpMethod: POST
-        PassthroughBehavior: WHEN_NO_MATCH
-        TimeoutInMillis: 29000
-        Type: AWS_PROXY
-        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
-      OperationName: 'lambda'
-      ResourceId: !Ref ApiGatewayStoreItemResource
-      RestApiId: !Ref ApiGatewayAdvertisementRestApi
-
-  ApiGatewayAdvertisementMethodGetId:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      ApiKeyRequired: false
-      AuthorizationType: NONE
-      HttpMethod: GET
-      Integration:
-        ConnectionType: INTERNET
-        Credentials: !GetAtt ApiGatewayIamRole.Arn
-        IntegrationHttpMethod: POST
-        PassthroughBehavior: WHEN_NO_MATCH
-        TimeoutInMillis: 29000
-        Type: AWS_PROXY
-        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
-      OperationName: 'lambda'
-      ResourceId: !Ref ApiGatewayStoreItemIdResource
-      RestApiId: !Ref ApiGatewayAdvertisementRestApi
-
-  ApiGatewayStoreItemMethodPost:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      ApiKeyRequired: false
-      AuthorizationType: NONE
-      HttpMethod: POST
-      Integration:
-        ConnectionType: INTERNET
-        Credentials: !GetAtt ApiGatewayIamRole.Arn
-        IntegrationHttpMethod: POST
-        PassthroughBehavior: WHEN_NO_MATCH
-        TimeoutInMillis: 29000
-        Type: AWS_PROXY
-        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
-      OperationName: 'lambda'
-      ResourceId: !Ref ApiGatewayAdvertisementResource
-      RestApiId: !Ref ApiGatewayStoreItemRestApi
-
-  ApiGatewayStoreItemMethodGetStore:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      ApiKeyRequired: false
-      AuthorizationType: NONE
-      HttpMethod: GET
-      Integration:
-        ConnectionType: INTERNET
-        Credentials: !GetAtt ApiGatewayIamRole.Arn
-        IntegrationHttpMethod: POST
-        PassthroughBehavior: WHEN_NO_MATCH
-        TimeoutInMillis: 29000
-        Type: AWS_PROXY
-        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
-      OperationName: 'lambda'
-      ResourceId: !Ref ApiGatewayStoreItemResource
-      RestApiId: !Ref ApiGatewayStoreItemRestApi
-
-  ApiGatewayStoreItemMethodGetId:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      ApiKeyRequired: false
-      AuthorizationType: NONE
-      HttpMethod: GET
-      Integration:
-        ConnectionType: INTERNET
-        Credentials: !GetAtt ApiGatewayIamRole.Arn
-        IntegrationHttpMethod: POST
-        PassthroughBehavior: WHEN_NO_MATCH
-        TimeoutInMillis: 29000
-        Type: AWS_PROXY
-        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
-      OperationName: 'lambda'
-      ResourceId: !Ref ApiGatewayStoreItemIdResource
-      RestApiId: !Ref ApiGatewayStoreItemRestApi
-
-  ApiGatewayAdvertisementMethodGetAnalytics:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      ApiKeyRequired: false
-      AuthorizationType: NONE
-      HttpMethod: GET
-      Integration:
-        ConnectionType: INTERNET
-        Credentials: !GetAtt ApiGatewayIamRole.Arn
-        IntegrationHttpMethod: POST
-        PassthroughBehavior: WHEN_NO_MATCH
-        TimeoutInMillis: 29000
-        Type: AWS_PROXY
-        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
-      OperationName: 'lambda'
-      ResourceId: !Ref ApiGatewayAdvertisimentsAnalyticsResource
-      RestApiId: !Ref ApiGatewayAdvertisementRestApi
-
-  ApiGatewayAdvertisementMethodIndex:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      ApiKeyRequired: false
-      AuthorizationType: NONE
-      HttpMethod: GET
-      Integration:
-        ConnectionType: INTERNET
-        Credentials: !GetAtt ApiGatewayIamRole.Arn
-        IntegrationHttpMethod: POST
-        PassthroughBehavior: WHEN_NO_MATCH
-        TimeoutInMillis: 29000
-        Type: AWS_PROXY
-        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerWeb.Arn}/invocations'
-      OperationName: 'lambda'
-      ResourceId: !Ref ApiGatewayWebIndexResource
-      RestApiId: !Ref ApiGatewayAdvertisementRestApi
-
-  ApiGatewayModel:
-    Type: AWS::ApiGateway::Model
-    Properties:
-      ContentType: 'application/json'
-      RestApiId: !Ref ApiGatewayAdvertisementRestApi
-      Schema: {}
-
-  ApiGatewayStage:
-    Type: AWS::ApiGateway::Stage
-    Properties:
-      DeploymentId: !Ref ApiGatewayDeployment
-      Description: Lambda API Stage v0
-      RestApiId: !Ref ApiGatewayAdvertisementRestApi
-      StageName: 'v0'
-
-  ApiGatewayDeployment:
+  WebApiDeployment:
     Type: AWS::ApiGateway::Deployment
     DependsOn:
-      - ApiGatewayAdvertisementMethodPost
-      - ApiGatewayAdvertisementWebIndexResource
-      - ApiGatewayAdvertisementMethodGetStore
+      - WebGatewayAdvertisementRestApi
     Properties:
-      Description: Lambda API Deployment
+      RestApiId: !Ref WebGatewayAdvertisementRestApi
+      StageName: "v0"
+
+  RestApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - ApiGatewayAdvertisementRestApi
+    Properties:
       RestApiId: !Ref ApiGatewayAdvertisementRestApi
+      StageName: "v0"
+
+
+
+#  ApiGatewayStoreItemRestApi:
+#    Type: AWS::ApiGateway::RestApi
+#    Properties:
+#      ApiKeySourceType: HEADER
+#      Description: An API Gateway with a Lambda Integration
+#      EndpointConfiguration:
+#        Types:
+#          - EDGE
+#      Name: store-item-api
+#
+#  ApiGatewayWebAppHttpApi:
+#    Type: AWS::ApiGateway::RestApi
+#    Properties:
+#      ApiKeySourceType: HEADER
+#      Description: An API Gateway with a Lambda Integration
+#      Body:
+#        swagger: 2.0
+#        info:
+#          version: 0.0.1
+#          title: Web
+#        basePath: /web
+#        schemes:
+#          - https
+#        definitions:
+#          Empty:
+#            type: object
+#      EndpointConfiguration:
+#        Types:
+#          - EDGE
+#      Name: web-app
+#
+#  ApiGatewayWebIndexResource:
+#    Type: AWS::ApiGateway::Resource
+#    Properties:
+#      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+#      PathPart: 'web'
+#      RestApiId: !Ref ApiGatewayRestApi
+#
+#  ApiGatewayAdvertisementResource:
+#    Type: AWS::ApiGateway::Resource
+#    Properties:
+#      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+#      PathPart: 'advertisement'
+#      RestApiId: !Ref ApiGatewayRestApi
+#
+#  ApiGatewayStoreItemResource:
+#    Type: AWS::ApiGateway::Resource
+#    Properties:
+#      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+#      PathPart: 'storeItem'
+#      RestApiId: !Ref ApiGatewayRestApi
+#
+#  ApiGatewayStoreItemIdResource:
+#    Type: AWS::ApiGateway::Resource
+#    Properties:
+#      ParentId: !Ref ApiGatewayStoreItemResource
+#      PathPart: '{id}'
+#      RestApiId: !Ref ApiGatewayRestApi
+#
+#  ApiGatewayAdvertisementIdResource:
+#    Type: AWS::ApiGateway::Resource
+#    Properties:
+#      ParentId: !Ref ApiGatewayAdvertisementResource
+#      PathPart: '{id}'
+#      RestApiId: !Ref ApiGatewayRestApi
+#
+#  ApiGatewayAdvertisimentsAnalyticsResource:
+#    Type: AWS::ApiGateway::Resource
+#    Properties:
+#      ParentId: !Ref ApiGatewayAdvertisementResource
+#      PathPart: 'analytics'
+#      RestApiId: !Ref ApiGatewayRestApi
+#
+#  ApiGatewayAdvertisementMethodPost:
+#    Type: AWS::ApiGateway::Method
+#    Properties:
+#      ApiKeyRequired: false
+#      AuthorizationType: NONE
+#      HttpMethod: POST
+#      Integration:
+#        ConnectionType: INTERNET
+#        Credentials: !GetAtt ApiGatewayIamRole.Arn
+#        IntegrationHttpMethod: POST
+#        PassthroughBehavior: WHEN_NO_MATCH
+#        TimeoutInMillis: 29000
+#        Type: AWS_PROXY
+#        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
+#      OperationName: 'lambda'
+#      ResourceId: !Ref ApiGatewayAdvertisementResource
+#      RestApiId: !Ref ApiGatewayAdvertisementRestApi
+#
+#  ApiGatewayAdvertisementMethodGetStore:
+#    Type: AWS::ApiGateway::Method
+#    Properties:
+#      ApiKeyRequired: false
+#      AuthorizationType: NONE
+#      HttpMethod: GET
+#      Integration:
+#        ConnectionType: INTERNET
+#        Credentials: !GetAtt ApiGatewayIamRole.Arn
+#        IntegrationHttpMethod: POST
+#        PassthroughBehavior: WHEN_NO_MATCH
+#        TimeoutInMillis: 29000
+#        Type: AWS_PROXY
+#        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
+#      OperationName: 'lambda'
+#      ResourceId: !Ref ApiGatewayStoreItemResource
+#      RestApiId: !Ref ApiGatewayAdvertisementRestApi
+#
+#  ApiGatewayAdvertisementMethodGetId:
+#    Type: AWS::ApiGateway::Method
+#    Properties:
+#      ApiKeyRequired: false
+#      AuthorizationType: NONE
+#      HttpMethod: GET
+#      Integration:
+#        ConnectionType: INTERNET
+#        Credentials: !GetAtt ApiGatewayIamRole.Arn
+#        IntegrationHttpMethod: POST
+#        PassthroughBehavior: WHEN_NO_MATCH
+#        TimeoutInMillis: 29000
+#        Type: AWS_PROXY
+#        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
+#      OperationName: 'lambda'
+#      ResourceId: !Ref ApiGatewayStoreItemIdResource
+#      RestApiId: !Ref ApiGatewayAdvertisementRestApi
+#
+#  ApiGatewayStoreItemMethodPost:
+#    Type: AWS::ApiGateway::Method
+#    Properties:
+#      ApiKeyRequired: false
+#      AuthorizationType: NONE
+#      HttpMethod: POST
+#      Integration:
+#        ConnectionType: INTERNET
+#        Credentials: !GetAtt ApiGatewayIamRole.Arn
+#        IntegrationHttpMethod: POST
+#        PassthroughBehavior: WHEN_NO_MATCH
+#        TimeoutInMillis: 29000
+#        Type: AWS_PROXY
+#        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
+#      OperationName: 'lambda'
+#      ResourceId: !Ref ApiGatewayAdvertisementResource
+#      RestApiId: !Ref ApiGatewayStoreItemRestApi
+#
+#  ApiGatewayStoreItemMethodGetStore:
+#    Type: AWS::ApiGateway::Method
+#    Properties:
+#      ApiKeyRequired: false
+#      AuthorizationType: NONE
+#      HttpMethod: GET
+#      Integration:
+#        ConnectionType: INTERNET
+#        Credentials: !GetAtt ApiGatewayIamRole.Arn
+#        IntegrationHttpMethod: POST
+#        PassthroughBehavior: WHEN_NO_MATCH
+#        TimeoutInMillis: 29000
+#        Type: AWS_PROXY
+#        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
+#      OperationName: 'lambda'
+#      ResourceId: !Ref ApiGatewayStoreItemResource
+#      RestApiId: !Ref ApiGatewayStoreItemRestApi
+#
+#  ApiGatewayStoreItemMethodGetId:
+#    Type: AWS::ApiGateway::Method
+#    Properties:
+#      ApiKeyRequired: false
+#      AuthorizationType: NONE
+#      HttpMethod: GET
+#      Integration:
+#        ConnectionType: INTERNET
+#        Credentials: !GetAtt ApiGatewayIamRole.Arn
+#        IntegrationHttpMethod: POST
+#        PassthroughBehavior: WHEN_NO_MATCH
+#        TimeoutInMillis: 29000
+#        Type: AWS_PROXY
+#        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
+#      OperationName: 'lambda'
+#      ResourceId: !Ref ApiGatewayStoreItemIdResource
+#      RestApiId: !Ref ApiGatewayStoreItemRestApi
+#
+#  ApiGatewayAdvertisementMethodGetAnalytics:
+#    Type: AWS::ApiGateway::Method
+#    Properties:
+#      ApiKeyRequired: false
+#      AuthorizationType: NONE
+#      HttpMethod: GET
+#      Integration:
+#        ConnectionType: INTERNET
+#        Credentials: !GetAtt ApiGatewayIamRole.Arn
+#        IntegrationHttpMethod: POST
+#        PassthroughBehavior: WHEN_NO_MATCH
+#        TimeoutInMillis: 29000
+#        Type: AWS_PROXY
+#        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
+#      OperationName: 'lambda'
+#      ResourceId: !Ref ApiGatewayAdvertisimentsAnalyticsResource
+#      RestApiId: !Ref ApiGatewayAdvertisementRestApi
+#
+#  ApiGatewayAdvertisementMethodIndex:
+#    Type: AWS::ApiGateway::Method
+#    Properties:
+#      ApiKeyRequired: false
+#      AuthorizationType: NONE
+#      HttpMethod: GET
+#      Integration:
+#        ConnectionType: INTERNET
+#        Credentials: !GetAtt ApiGatewayIamRole.Arn
+#        IntegrationHttpMethod: POST
+#        PassthroughBehavior: WHEN_NO_MATCH
+#        TimeoutInMillis: 29000
+#        Type: AWS_PROXY
+#        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerWeb.Arn}/invocations'
+#      OperationName: 'lambda'
+#      ResourceId: !Ref ApiGatewayWebIndexResource
+#      RestApiId: !Ref ApiGatewayAdvertisementRestApi
+#
+#  ApiGatewayModel:
+#    Type: AWS::ApiGateway::Model
+#    Properties:
+#      ContentType: 'application/json'
+#      RestApiId: !Ref ApiGatewayAdvertisementRestApi
+#      Schema: {}
+#
+#  ApiGatewayStage:
+#    Type: AWS::ApiGateway::Stage
+#    Properties:
+#      DeploymentId: !Ref ApiGatewayDeployment
+#      Description: Lambda API Stage v0
+#      RestApiId: !Ref ApiGatewayAdvertisementRestApi
+#      StageName: 'v0'
+#
+#  ApiGatewayDeployment:
+#    Type: AWS::ApiGateway::Deployment
+#    DependsOn:
+#      - ApiGatewayAdvertisementMethodPost
+#      - ApiGatewayAdvertisementWebIndexResource
+#      - ApiGatewayAdvertisementMethodGetStore
+#    Properties:
+#      Description: Lambda API Deployment
+#      RestApiId: !Ref ApiGatewayAdvertisementRestApi
 
   ApiGatewayIamRole:
     Type: AWS::IAM::Role
