@@ -45,5 +45,5 @@ def handle_crud(event, context):
     if not container:
         container = punq.Container()
         container = set_dependency(container)
-    handler = container.resolve(AdvertisementHandler)
+    handler = container.resolve(StoreItemHandler)
     return handler.handle(event, context)

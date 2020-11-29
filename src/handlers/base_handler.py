@@ -1,14 +1,12 @@
 import inspect
 import json
 from collections import Callable
-from functools import wraps
-from logging import getLogger
 from typing import List, NamedTuple, Any
 
 from mako.template import Template
 from pydantic import BaseModel
 
-from src.data.models.business.request import Request, Response
+from src.data.models.business.request import Response
 from src.data.models.transform.event_to_request import event_to_request
 
 
@@ -52,11 +50,12 @@ def _create_wrapper(method):
 
 
 class BaseHandler:
-    def __init__(self):
+    def __init__(self, request_transformation=event_to_request):
         super(BaseHandler, self).__init__()
 
         # self.logger = getLogger(__class__)
         self.endpoints = []
+        self._request_transformation = request_transformation
 
         for name, method in inspect.getmembers(self, predicate=inspect.ismethod):
             route = getattr(method, '_route', None)
@@ -67,17 +66,20 @@ class BaseHandler:
 
     # TODO extract out later since need more hadlers in one lambda
     def handle(self, event, context):
-        request = event_to_request(event)
-        print(request)
+        request = self._request_transformation(event)
         for endpoint in [x for x in self.endpoints if x.match(request.endpoint, request.method)]:
             return endpoint.func(request=request)
 
+        return self.common_handle(request)
+
     def make_response(self, content: Any, status_code, headers={}) -> Response:
-        strigified_body = content.json() if isinstance(content, BaseModel) else str(content)
+        strigified_body = content.json() if isinstance(content, BaseModel) else json.dumps(content)
         return Response(body=strigified_body, statusCode=status_code, headers=headers).dict()
 
-    def make_html_response(self, content: Any) -> Response:
-        if isinstance(content, Template):
-            return content.render()
-        else:
-            return str(content)
+    def make_html_response(self, content: Any, status_code=200, headers={}) -> Response:
+        strigified_body = content.render() if isinstance(content, Template) else str(content)
+
+        return Response(body=strigified_body, statusCode=status_code, headers=headers).dict()
+
+    def common_handle(self, request):
+        raise NotImplementedError

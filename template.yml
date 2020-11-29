@@ -3,7 +3,81 @@ Transform:
   - AWS::Serverless-2016-10-31
 Description: AWS API Gateway with a Lambda Integration
 
+Parameters:
+  Environment:
+    Description: Base segmentation of stack.
+    Default: test
+    Type: String
+    AllowedValues:
+      - test
+      - prod
+
+
+PhotoS3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub "bazara-photos-{Environment}"
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            AllowedOrigins:
+              - '*'
+            ExposedHeaders:
+              - Date
+            Id: myCORSRuleId1
+            MaxAge: '3600'
+          - AllowedHeaders:
+              - x-amz-*
+            AllowedMethods:
+              - DELETE
+            AllowedOrigins:
+              - '*'
+            ExposedHeaders:
+              - Connection
+              - Server
+              - Date
+            Id: myCORSRuleId2
+            MaxAge: '1800'
+
 Resources:
+  PhotoS3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub "bazara-photos-{Environment}"
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            AllowedOrigins:
+              - '*'
+            ExposedHeaders:
+              - Date
+            Id: myCORSRuleId1
+            MaxAge: '3600'
+          - AllowedHeaders:
+              - x-amz-*
+            AllowedMethods:
+              - DELETE
+            AllowedOrigins:
+              - '*'
+            ExposedHeaders:
+              - Connection
+              - Server
+              - Date
+            Id: myCORSRuleId2
+            MaxAge: '1800'
+
   ApiGatewayAdvertisementRestApi:
     Type: AWS::ApiGateway::RestApi
     Properties:
@@ -122,7 +196,7 @@ Resources:
                   description: resource
                   schema:
                     type: object
-          /storeItem:
+          /store-items:
             post:
               x-amazon-apigateway-integration:
                 httpMethod: POST
@@ -163,7 +237,27 @@ Resources:
                   description: resource
                   schema:
                     type: object
-          /storeItem/{id}:
+          /store-items/{id}:
+            post:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                passthroughBehavior: when_no_match
+                type: AWS_PROXY
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
+                requestTemplates:
+                  application/json: $input.body
+              tags:
+                - "advertisement"
+              description: "CRUD for store item"
+              consumes:
+                - "application/json"
+              produces:
+                - "application/json"
+              responses:
+                '200':
+                  description: resource
+                  schema:
+                    type: object
             put:
               x-amazon-apigateway-integration:
                 httpMethod: POST
@@ -209,8 +303,6 @@ Resources:
           - EDGE
       Name: bazar-api
 
-
-
   WebGatewayAdvertisementRestApi:
     Type: AWS::ApiGateway::RestApi
     DependsOn:
@@ -237,6 +329,165 @@ Resources:
                 uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerWeb.Arn}/invocations'
                 requestTemplates:
                   application/json: |
+                    ##  See http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+                    ##  This template will pass through all parameters including path, querystring, header, stage variables, and context through to the integration endpoint via the body/payload
+                    #set($allParams = $input.params())
+                    {
+                    "body-json" : $input.json('$'),
+                    "body" : $input.json('$'),
+                    "params" : {
+                    #foreach($type in $allParams.keySet())
+                        #set($params = $allParams.get($type))
+                    "$type" : {
+                        #foreach($paramName in $params.keySet())
+                        "$paramName" : "$util.escapeJavaScript($params.get($paramName))"
+                            #if($foreach.hasNext),#end
+                        #end
+                    }
+                        #if($foreach.hasNext),#end
+                    #end
+                    },
+                    "stage-variables" : {
+                    #foreach($key in $stageVariables.keySet())
+                    "$key" : "$util.escapeJavaScript($stageVariables.get($key))"
+                        #if($foreach.hasNext),#end
+                    #end
+                    },
+                    "resource" : "$context.resourcePath",
+                    "path" : "$context.resourcePath",
+                    "httpMethod" : "$context.httpMethod",
+                    "headers" : {},
+                    "context" : {
+                        "account-id" : "$context.identity.accountId",
+                        "api-id" : "$context.apiId",
+                        "api-key" : "$context.identity.apiKey",
+                        "authorizer-principal-id" : "$context.authorizer.principalId",
+                        "caller" : "$context.identity.caller",
+                        "cognito-authentication-provider" : "$context.identity.cognitoAuthenticationProvider",
+                        "cognito-authentication-type" : "$context.identity.cognitoAuthenticationType",
+                        "cognito-identity-id" : "$context.identity.cognitoIdentityId",
+                        "cognito-identity-pool-id" : "$context.identity.cognitoIdentityPoolId",
+                        "http-method" : "$context.httpMethod",
+                        "stage" : "$context.stage",
+                        "source-ip" : "$context.identity.sourceIp",
+                        "user" : "$context.identity.user",
+                        "user-agent" : "$context.identity.userAgent",
+                        "user-arn" : "$context.identity.userArn",
+                        "request-id" : "$context.requestId",
+                        "resource-id" : "$context.resourceId",
+                        "resource-path" : "$context.resourcePath"
+                        }
+                    }
+                responses:
+                  default:
+                    statusCode: 200
+                    headers:
+                      Access-Control-Allow-Origin:
+                        type: string
+#                    responseParameters:
+#                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                    responseTemplates:
+                      'text/html': |
+                        #set($inputRoot = $input.path('$'))
+                        $inputRoot.body
+
+              tags:
+                - "web-index"
+              description: "Index for web"
+              produces:
+                - "text/html"
+              responses:
+                '200':
+                  description: resource
+                  schema:
+                    type: object
+          /web/{controller}:
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                passthroughBehavior: when_no_match
+                type: aws
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerWeb.Arn}/invocations'
+                requestTemplates:
+                  application/json: |
+                    ##  See http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+                    ##  This template will pass through all parameters including path, querystring, header, stage variables, and context through to the integration endpoint via the body/payload
+                    #set($allParams = $input.params())
+                    {
+                    "body-json" : $input.json('$'),
+                    "body" : $input.json('$'),
+                    "params" : {
+                    #foreach($type in $allParams.keySet())
+                        #set($params = $allParams.get($type))
+                    "$type" : {
+                        #foreach($paramName in $params.keySet())
+                        "$paramName" : "$util.escapeJavaScript($params.get($paramName))"
+                            #if($foreach.hasNext),#end
+                        #end
+                    }
+                        #if($foreach.hasNext),#end
+                    #end
+                    },
+                    "stage-variables" : {
+                    #foreach($key in $stageVariables.keySet())
+                    "$key" : "$util.escapeJavaScript($stageVariables.get($key))"
+                        #if($foreach.hasNext),#end
+                    #end
+                    },
+                    "resource" : "$context.resourcePath",
+                    "path" : "$context.resourcePath",
+                    "httpMethod" : "$context.httpMethod",
+                    "headers" : {},
+                    "context" : {
+                        "account-id" : "$context.identity.accountId",
+                        "api-id" : "$context.apiId",
+                        "api-key" : "$context.identity.apiKey",
+                        "authorizer-principal-id" : "$context.authorizer.principalId",
+                        "caller" : "$context.identity.caller",
+                        "cognito-authentication-provider" : "$context.identity.cognitoAuthenticationProvider",
+                        "cognito-authentication-type" : "$context.identity.cognitoAuthenticationType",
+                        "cognito-identity-id" : "$context.identity.cognitoIdentityId",
+                        "cognito-identity-pool-id" : "$context.identity.cognitoIdentityPoolId",
+                        "http-method" : "$context.httpMethod",
+                        "stage" : "$context.stage",
+                        "source-ip" : "$context.identity.sourceIp",
+                        "user" : "$context.identity.user",
+                        "user-agent" : "$context.identity.userAgent",
+                        "user-arn" : "$context.identity.userArn",
+                        "request-id" : "$context.requestId",
+                        "resource-id" : "$context.resourceId",
+                        "resource-path" : "$context.resourcePath"
+                        }
+                    }
+                responses:
+                  default:
+                    statusCode : 200
+                    #responseParameters:
+                      #method.reponse.header.Access-Control-Allow-Origin: "'*'"
+                    responseTemplates:
+                      'text/html': |
+                          #set($inputRoot = $input.path('$'))
+                          $inputRoot.body
+
+              tags:
+                - "web-index"
+              description: "Index for web"
+              produces:
+                - "text/html"
+              responses:
+                '200':
+                  description: resource
+                  schema:
+                    type: object
+          /web/{controller}/{view}:
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                passthroughBehavior: WHEN_NO_MATCH
+                type: aws
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerWeb.Arn}/invocations'
+                requestTemplates:
+                  application/json: |
                     #set($allParams = $input.params())
                     {
                     "body-json" : $input.json('$'),
@@ -258,16 +509,20 @@ Resources:
                         #if($foreach.hasNext),#end
                     #end
                     },
+                    "resource" : "$context.resourcePath",
+                    "path" : "$context.resourcePath",
                     "httpMethod" : "$context.httpMethod"
                     }
                 responses:
                   default:
                     statusCode: 200
-                    #responseParameters:
-                     # method.response.header.Access-Control-Allow-Origin: "'*'"
-                     # method.response.header.Content-Type: "'text/html'"
-                responseTemplates:
-                  'text/hml': "$input.path('$')"
+                      #responseParameters:
+                    #method.response.header.Access-Control-Allow-Origin: "'*'"
+                    #method.response.header.Content-Type: "'text/html'"
+                    responseTemplates:
+                      'text/html': |
+                          #set($inputRoot = $input.path('$'))
+                          $inputRoot.body
 
               tags:
                 - "web-index"
@@ -279,8 +534,7 @@ Resources:
                   description: resource
                   schema:
                     type: object
-          /web/{controller}:
-            get:
+            put:
               x-amazon-apigateway-integration:
                 httpMethod: POST
                 passthroughBehavior: when_no_match
@@ -309,32 +563,36 @@ Resources:
                         #if($foreach.hasNext),#end
                     #end
                     },
+                    "resource" : "$context.resourcePath",
+                    "path" : "$context.resourcePath",
                     "httpMethod" : "$context.httpMethod"
                     }
                 responses:
                   default:
-                    statusCode : 200
+                    statusCode: 200
                     #responseParameters:
-                      #method.response.header.Access-Control-Allow-Origin: "'*'"
-                      #method.response.header.Content-Type: "'text/html'"
-                responseTemplates:
-                  'text/hml' : "$input.path('$')"
-
+                    #method.response.header.Access-Control-Allow-Origin: "'*'"
+                    #method.response.header.Content-Type: "'text/html'"
+                    responseTemplates:
+                      'application/json': |
+                        #set($inputRoot = $input.path('$'))
+                        $inputRoot.body
               tags:
-                - "web-index"
-              description: "Index for web"
+                - "advertisement"
+              description: "CRUD for store item"
+              consumes:
+                - "application/json"
               produces:
-                - "text/html"
+                - "application/json"
               responses:
                 '200':
                   description: resource
                   schema:
                     type: object
-          /web/{controller}/{view}:
-            get:
+            post:
               x-amazon-apigateway-integration:
                 httpMethod: POST
-                passthroughBehavior: WHEN_NO_TEMPLATES
+                passthroughBehavior: when_no_match
                 type: aws
                 uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerWeb.Arn}/invocations'
                 requestTemplates:
@@ -360,27 +618,165 @@ Resources:
                         #if($foreach.hasNext),#end
                     #end
                     },
+                    "resource" : "$context.resourcePath",
+                    "path" : "$context.resourcePath",
                     "httpMethod" : "$context.httpMethod"
                     }
                 responses:
                   default:
                     statusCode: 200
-                      #responseParameters:
+                    #responseParameters:
                     #method.response.header.Access-Control-Allow-Origin: "'*'"
                     #method.response.header.Content-Type: "'text/html'"
-                responseTemplates:
-                  'text/hml': "$input.path('$')"
-
+                    responseTemplates:
+                      'application/json': |
+                        #set($inputRoot = $input.path('$'))
+                        $inputRoot.body
               tags:
-                - "web-index"
-              description: "Index for web"
+                - "advertisement"
+              description: "CRUD for store item"
+              consumes:
+                - "application/json"
               produces:
-                - "text/html"
+                - "application/json"
               responses:
                 '200':
                   description: resource
                   schema:
                     type: object
+          /css/{file_name}:
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                passthroughBehavior: WHEN_NO_MATCH
+                type: aws
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerWeb.Arn}/invocations'
+                requestTemplates:
+                  application/json: |
+                    #set($allParams = $input.params())
+                    {
+                    "body-json" : $input.json('$'),
+                    "params" : {
+                    #foreach($type in $allParams.keySet())
+                        #set($params = $allParams.get($type))
+                    "$type" : {
+                        #foreach($paramName in $params.keySet())
+                        "$paramName" : "$util.escapeJavaScript($params.get($paramName))"
+                            #if($foreach.hasNext),#end
+                        #end
+                    }
+                        #if($foreach.hasNext),#end
+                    #end
+                    },
+                    "stage-variables" : {
+                    #foreach($key in $stageVariables.keySet())
+                    "$key" : "$util.escapeJavaScript($stageVariables.get($key))"
+                        #if($foreach.hasNext),#end
+                    #end
+                    },
+                    "resource" : "$context.resourcePath",
+                    "path" : "$context.resourcePath",
+                    "httpMethod" : "$context.httpMethod"
+                    }
+                responses:
+                  default:
+                    statusCode: 200
+                    #responseParameters:
+                    #method.response.header.Access-Control-Allow-Origin: "'*'"
+                    #method.response.header.Content-Type: "'text/html'"
+                    responseTemplates:
+                      'text/css': |
+                        #set($inputRoot = $input.path('$'))
+                        $inputRoot.body
+
+              tags:
+                - "web-index"
+              description: "Index for web"
+              produces:
+                - "text/css"
+              responses:
+                '200':
+                  description: resource
+                  schema:
+                    type: object
+          /js/{file_name}:
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                passthroughBehavior: WHEN_NO_MATCH
+                type: aws
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerWeb.Arn}/invocations'
+                requestTemplates:
+                  application/json: |
+                    #set($allParams = $input.params())
+                    {
+                    "body-json" : $input.json('$'),
+                    "params" : {
+                    #foreach($type in $allParams.keySet())
+                        #set($params = $allParams.get($type))
+                    "$type" : {
+                        #foreach($paramName in $params.keySet())
+                        "$paramName" : "$util.escapeJavaScript($params.get($paramName))"
+                            #if($foreach.hasNext),#end
+                        #end
+                    }
+                        #if($foreach.hasNext),#end
+                    #end
+                    },
+                    "stage-variables" : {
+                    #foreach($key in $stageVariables.keySet())
+                    "$key" : "$util.escapeJavaScript($stageVariables.get($key))"
+                        #if($foreach.hasNext),#end
+                    #end
+                    },
+                    "resource" : "$context.resourcePath",
+                    "path" : "$context.resourcePath",
+                    "httpMethod" : "$context.httpMethod"
+                    }
+                responses:
+                  default:
+                    statusCode: 200
+                    #responseParameters:
+                    #method.response.header.Access-Control-Allow-Origin: "'*'"
+                    #method.response.header.Content-Type: "'text/html'"
+                    responseTemplates:
+                      'text/javascript': |
+                        #set($inputRoot = $input.path('$'))
+                        $inputRoot.body
+
+              tags:
+                - "web-index"
+              description: "Index for web"
+              produces:
+                - "text/javascript"
+              responses:
+                '200':
+                  description: resource
+                  schema:
+                    type: object
+          /file/presigned_upload_link:
+             get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                passthroughBehavior: when_no_match
+                type: AWS_PROXY
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
+                requestTemplates:
+                  application/json: $input.body
+              tags:
+                - "file"
+                - "presigned_upload_link"
+              description: "Presigned upload link for file"
+              consumes:
+                - "application/json"
+              produces:
+                - "application/json"
+              responses:
+                '200':
+                  description: resource
+                  schema:
+                    type: object
+
       EndpointConfiguration:
         Types:
           - EDGE
@@ -725,10 +1121,23 @@ Resources:
     Properties:
       Runtime: python3.8
       CodeUri:
-        S3Bucket: 'bazaar-app-web'
-        S3Key: 'output.zip'
+        Bucket: 'bazaar-app-lambda'
+        Key: !Sub 'output.zip'
       Handler: src.web.handle_test
       MemorySize: 256
+      Environment:
+        Variables:
+          PhotoBucket : !Ref PhotoS3Bucket
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+                - s3:PutObjectAcl
+              Resource:
+                - !GetAtt PhotoS3Bucket.Arn
 
 
   BazaarServerApp:
@@ -736,14 +1145,15 @@ Resources:
     Properties:
       Runtime: python3.8
       CodeUri:
-        S3Bucket: 'bazaar-app-lambda'
-        S3Key: 'output.zip'
+        Bucket: 'bazaar-app-lambda'
+        Key: !Sub 'output.zip'
       Handler: src.server.handle_crud
       MemorySize: 256
       Environment:
         Variables:
           StoreItemTable : !Ref StoreItemTable
-          AdvertisementTable : !Ref AdvertisementTable
+
+          AdvertisementTable : ""
       Policies:
         - Version: '2012-10-17'
           Statement:
@@ -754,28 +1164,14 @@ Resources:
                 - dynamodb:Query
                 - dynamodb:Scan
               Resource:
-                - !Sub "${AdvertisementTable.Arn}"
-                - !Sub "${AdvertisementTable.Arn}/index/*"
                 - !Sub "${StoreItemTable.Arn}"
                 - !Sub "${StoreItemTable.Arn}/index/*"
 
 
-  AdvertisementTable:
-    Type: 'AWS::DynamoDB::Table'
-    Properties:
-      TableName: 'advertisement_items_v1'
-      BillingMode: PAY_PER_REQUEST
-      AttributeDefinitions:
-        - AttributeName: "id"
-          AttributeType: S
-      KeySchema:
-        - AttributeName: "id"
-          KeyType: HASH
-
   StoreItemTable:
     Type: 'AWS::DynamoDB::Table'
     Properties:
-      TableName: 'store_items_v1'
+      TableName: !Sub 'store_items_v1_${Environment}'
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
         - AttributeName: "id"

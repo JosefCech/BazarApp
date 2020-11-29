@@ -3,7 +3,7 @@ from src.data.repo.base_repo import BaseRepo
 
 
 class AdvertisementRepo(BaseRepo):
-    def __init__(self, advertisement_table: str):
+    def __init__(self, advertisement_table):
         self._advertisement_table = advertisement_table
 
     def get_by_id(self, id):

@@ -1,6 +1,5 @@
 import punq
 
-from src.handlers.advertisement_handler import AdvertisementHandler
 from src.handlers.web_handler import WebHandler
 
 
@@ -10,7 +9,8 @@ def handle_test(event, context):
         'statusCode': 200,
         'headers': {},
         'multiValueHeaders': {},
-        'body': f'{str(event)}'
+        'body': f'{str(event)}',
+        'context': f'{str(context)}'
     }
     return response
 
@@ -29,4 +29,5 @@ def handle(event, context):
         container = punq.Container()
         container = set_dependency(container)
     handler = container.resolve(WebHandler)
+    print(f"Processing event {event} in {context}")
     return handler.handle(event, context)

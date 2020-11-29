@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+    <style type="text/css">
+body {
+  font-family: 'lato', sans-serif;
+}
+
+.container {
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+h2 {
+  font-size: 26px;
+  margin: 20px 0;
+  text-align: center;
+}
+h2 small {
+  font-size: 0.5em;
+}
+
+.responsive-table {
+
+}
+
+.responsive-table li {
+  border-radius: 3px;
+  padding: 25px 30px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+.responsive-table .table-header {
+  background-color: #95A5A6;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.responsive-table .table-row {
+  background-color: #ffffff;
+  box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.1);
+}
+.responsive-table .col-1 {
+  #flex-basis: 40%;
+  width : 280px;
+}
+.responsive-table .col-2 {
+  #flex-basis: 40%;
+  width : 280px;
+}
+.responsive-table .col-3 {
+ # flex-basis: 25%;
+  width : 100px;
+}
+.responsive-table .col-4 {
+  #flex-basis: 25%;
+  width : 100px;
+}
+
+.responsive-table .col-5 {
+ # flex-basis: 25%;
+  width : 100px;
+}
+.responsive-table .col-6 {
+  #flex-basis: 25%;
+  width : 100px;
+}
+
+.responsive-table .col-7 {
+  #flex-basis: 10%;
+  width : 100px;
+}
+.responsive-table .col-8 {
+  #flex-basis: 10%;
+  width : 100px;
+  }
+
+
+
+ .responsive-table div.col  {
+    margin: 0 10px;
+     display: table-cell;
+  }
+
+@media all and (max-width: 767px) {
+  .responsive-table .table-header {
+    display: none;
+  }
+  .responsive-table li {
+    display: block;
+  }
+  .responsive-table .col {
+    flex-basis: 100%;
+  }
+  .responsive-table .col {
+    display: flex;
+    padding: 10px 0;
+  }
+  .responsive-table .col:before {
+    color: #6C7A89;
+    padding-right: 10px;
+    content: attr(data-label);
+    flex-basis: 50%;
+    text-align: right;
+  }
+}
+
+a.button3{
+    display:inline-block;
+    padding:0.3em 1.2em;
+    margin: 0.3em 0.3em 0;
+    border-radius:2em;
+    box-sizing: border-box;
+    text-decoration:none;
+    font-family:'Roboto',sans-serif;
+    font-weight:300;
+    color:#FFFFFF;
+    background-color:#4eb5f1;
+    text-align:center;
+    transition: all 0.2s;
+}
+
+a.alone {
+   margin : 50px
+}
+
+a.button3:hover
+    {
+        background-color:#4095c6;
+    }
+@media all and (max-width:30em)
+    {
+        a.button3
+        {
+            display:block;
+            margin:0.2em auto;
+        }
+    }
+
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+</head>
+<body>
+
+<div class="container">
+
+    <h2>Store Items </h2>
+    <div class="button"><a href="./form"
+                       class="button3 alone">New item</a></div>
+    <ul class="responsive-table" id="storeItems">
+        <li class="table-header">
+            <div class="col col-1">Name
+                <div><input type="text" id="filter_name" onkeyup="filter_name()" placeholder="Search for names.." title="Type in a name"></div>
+            </div>
+            <div class="col col-2">Description
+                <div> <input type="text" id="filter_description" onkeyup="filter_description()" placeholder="Search for description.." title="Type in a description"></div>
+            </div>
+            <div class="col col-3"> Advertised
+            <input type="checkbox" id="filter_advertised" name="filter_advertised"
+               onclick="filter_advertised()"/>
+            </div>
+            <div class="col col-4"> Sold
+             <input type="checkbox" id="filter_sold" name="filter_sold"
+               onclick="filter_sold()"/>
+            </div>
+            <div class="col col-5"> Purchase price </div>
+            <div class="col col-6"> Given price </div>
+
+            <div class="col col-7"> </div>
+            <div class="col col-8"> </div>
+
+        </li>
+        %for item in items:
+        <li class="table-row">
+            <div class="col col-1" data-label="Name">${item.name}</div>
+            <div class="col col-2" data-label="Description">${item.longName}</div>
+            <div class="col col-3"> ${'Advertised' if item.is_advertised else 'X'} </div>
+            <div class="col col-4"> ${'Sold' if item.is_sold else 'X'}  </div>
+            <div class="col col-5"> ${item.purchasePrice} </div>
+            <div class="col col-6"> ${item.soldInfo.givenPrice if item.soldInfo else ''} </div>
+            <div class="col col-7" data-label="Edit"><a
+                    href="store-items/form?store_item_id=${item.id}"
+                    class="button3">Edit</a></div>
+            <div class="col col-8" data-label="Remove"><a class="button3" href="javascript:alert(${item.id})" class="button3">Remove</a>
+            </div>
+
+
+        </li>
+        %endfor
+    </ul>
+<div><a id="loadmore" href="javascript:alert('Load more')" class="button3 alone">Load more</a></div>
+</div>
+
+</body>
+<script type="text/javascript">
+var API_GATEWAY_ENDPOINT = 'https://qasi12d9c2.execute-api.eu-west-1.amazonaws.com/v0/advertisement';
+
+
+//auto expand textarea
+function adjust_textarea(h) {
+    h.style.height = "20px";
+    h.style.height = (h.scrollHeight)+"px";
+}
+
+function generateUUID() { // Public Domain/MIT
+    var d = new Date().getTime();//Timestamp
+    var d2 = (performance && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16;//random number between 0 and 16
+        if(d > 0){//Use timestamp until depleted
+            r = (d + r)%16 | 0;
+            d = Math.floor(d/16);
+        } else {//Use microseconds since page-load if supported
+            r = (d2 + r)%16 | 0;
+            d2 = Math.floor(d2/16);
+        }
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+}
+
+    var API_GATEWAY_ENDPOINT = 'https://qasi12d9c2.execute-api.eu-west-1.amazonaws.com/v0/advertisement';
+
+function show_message(type, message) {
+    $('#message').empty().append(
+        $('<div class="alert alert-' + type + '" role="alert">').text(message)
+    );
+}
+
+
+
+function validateDate(dateString) {
+ if (dateString == "") {
+     return 1
+     }
+
+    else {
+     var date_regex = /^(0[1-9]|1\d|2\d|3[01])\/(0[1-9]|1[0-2])\/(19|20)\d{2}$/;
+        if (!(date_regex.test(dateString))) {
+            alert("Not valid date " + dateString)
+            return 0
+         }
+    }
+    return 1
+}
+
+function filter_name() {
+ filter_in_table('col-1', 'filter_name')
+}
+
+function filter_description() {
+ filter_in_table('col-2', 'filter_description')
+}
+
+function filter_sold() {
+   var input, filter, table, tr, td, i, txtValue;
+  input = document.getElementById("filter_sold");
+  console.log(input)
+  checked = $('#filter_sold').prop('checked')
+  console.log(checked)
+  table = document.getElementById("storeItems");
+  li = table.getElementsByTagName("li");
+  for (i = 0; i < li.length; i++) {
+     if (li[i].className != 'table-header') {
+          div = li[i].getElementsByTagName("div")
+            txtValue = div[3].textContent || div[3].innerText;
+            console.log(txtValue)
+             if (txtValue.toLowerCase().indexOf('sold') > - 1 ||  !(checked) ) {
+                    li[i].style.display = "";
+                  } else {
+                    li[i].style.display = "none";
+                  }
+      }
+  }
+}
+
+function filter_advertised() {
+   var input, filter, table, tr, td, i, txtValue;
+  input = document.getElementById("filter_sold");
+  console.log(input)
+  checked = $('#filter_advertised').prop('checked')
+  console.log(checked)
+  table = document.getElementById("storeItems");
+  li = table.getElementsByTagName("li");
+  for (i = 0; i < li.length; i++) {
+     if (li[i].className != 'table-header') {
+          div = li[i].getElementsByTagName("div")
+            txtValue = div[4].textContent || div[4].innerText;
+            console.log(txtValue)
+             if (txtValue.toLowerCase().indexOf('advertised') > - 1 ||  !(checked) ) {
+                    li[i].style.display = "";
+                  } else {
+                    li[i].style.display = "none";
+                  }
+      }
+  }
+}
+
+
+function filter_in_table(column, filter_name) {
+  var input, filter, table, tr, td, i, txtValue;
+  input = document.getElementById(filter_name);
+  filter = input.value.toLowerCase();
+  table = document.getElementById("storeItems");
+  li = table.getElementsByTagName("li");
+  for (i = 0; i < li.length; i++) {
+     if (li[i].className != 'table-header') {
+        div = li[i].getElementsByTagName("div")
+         for (j = 0; j < div.length; j++) {
+           if (div[j].className.includes(column)) {
+                txtValue = div[j].textContent || div[j].innerText;
+                if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                    li[i].style.display = "";
+                  } else {
+                    li[i].style.display = "none";
+                  }
+           }
+         }
+      }
+    }
+  }
+
+
+
+
+
+</script>
+</html>

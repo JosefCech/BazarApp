@@ -1,5 +1,13 @@
+class LangObject:
+    def __init__(self, items):
+        self._items = items
 
-lang = {
+    def get(self, item, **kwargs):
+
+        return self._items.get(item).format(**kwargs) if self._items.get(item) else item
+
+
+lang = LangObject(items={
     'created': 'Vytvořen',
     'published': 'Publikován',
     'reserved': 'Rezervováno',
@@ -19,20 +27,26 @@ lang = {
     'summer': "Letní",
     'whole-year': "Celoroční",
     'undefined': "N/A",
-    'name' : "Název",
+    'name': "Název",
     'description': 'Popis inzerátu',
+    'longName': 'Popisek',
     'categorySex': 'Určení',
     'categoryType': "Kategorie",
     'categorySubtype': 'Podkategorie',
-    'brand' : 'Značka',
-     'season': 'Pro obdobi',
-     'size': 'Velikost',
+    'brand': 'Značka',
+    'season': 'Pro obdobi',
+    'size': 'Velikost',
     "originalPrice": "Původní cena",
     "boughtPrice": "Nákupní cena",
     "publishedDate": "Datum publikování",
     "soldDate": "Datum prodeje",
-     "postage": 'Poštovné',
-    "advertisedPrice":  "Inzerovaná cena",
-    "givenPrice": 'Zaplaceno'
+    "postage": 'Poštovné',
+    "advertisedPrice": "Inzerovaná cena",
+    "givenPrice": 'Zaplaceno',
+    "submit": "Odeslat",
+    "purchasePrice": "Zaplaceno",
+    "advertisementInfo": "Inzerát",
+    "soldInfo": "Prodej",
+    "item_extend_info": "{key} - rozšiřující informace"
 
-}
+})

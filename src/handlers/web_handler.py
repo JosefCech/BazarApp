@@ -1,78 +1,95 @@
+import os
+
+from mako import exceptions
 from mako.template import Template
 from punq import Container
 
-from src.data.models.business.advertisement_resource import AdvertisementRequest, CategorySex, CategoryType, SeasonEnum, \
-    StoreItemRequest
+from src.data.models.business.advertisement_resource import AdvertisementRequest, CategorySex, CategoryType, SeasonEnum
+from src.data.models.business.request import WebRequest
+from src.data.models.business.store_item_resource import StoreItemResourceRequest, StoreItemResourceResponse
 from src.data.models.transform.event_to_request import event_to_web_request
+
 from src.handlers.base_handler import endpoint, BaseHandler
 from src.localization.cz.advertisement import lang
-from src.web.controllers.advertisement import AdvertisementController
+
+from src.web.controllers.advertisement_controller import AdvertisementController
+from src.web.controllers.file_controller import FileController
+from src.web.controllers.store_item_controller import StoreItemController
+
+
+def _list(basepath, result):
+    for entry in os.listdir(basepath):
+        if os.path.isdir(os.path.join(basepath, entry)):
+            # print(basepath)
+            _list(os.path.join(basepath, entry), result)
+        if os.path.isfile(os.path.join(basepath, entry)):
+            #  print(os.path.join(basepath, entry))
+            result.append(os.path.join(basepath, entry))
+    return result
 
 
 class WebHandler(BaseHandler):
     def __init__(self, template_prefix="./"):
-        super().__init__()
+        super().__init__(request_transformation=event_to_web_request)
         self._template_prefix = template_prefix
         self._container = Container()
-        self._container.register(AdvertisementController, AdvertisementController)
+        self._container.register("StoreItemsController", StoreItemController, template_prefix=template_prefix)
 
+    def common_handle(self, request: WebRequest):
+        controller_name = self._snake_to_camel_case(request.path["controller"]) + 'Controller'
+        view = f"{request.method}_{request.path.get('view')}" if request.path.get("view") else "GET_list"
+        kwargs = {"lang": lang, "base_api_path": "https://qasi12d9c2.execute-api.eu-west-1.amazonaws.com/v0/web",
+                  "base_web_path": "https://qasi12d9c2.execute-api.eu-west-1.amazonaws.com/v0/web"}
 
-    def handle(self, event, context):
-        request = event_to_web_request(event)
-        controller_name = request.path["controller"] + 'Controller'
-        view = request.path["view"] if request.path["view"] else "base_view"
-        method =
+        if request.method in ["PUT", "POST"]:
+            request_object = StoreItemResourceRequest(**request.body)
+            kwargs["request_object"] = request_object
+
+        kwargs = {**request.parameters, **kwargs}
 
         controller = self._container.resolve(controller_name)
-        kwargs = {}
-        template = getattr(controller, view)(**kwargs)
+        try:
+            response = getattr(controller, view)(**kwargs)
+        except Exception:
+            error = exceptions.html_error_template().render()
+            # print(error)
+            return self.make_html_response(error.decode('utf-8'))
 
-        return self.make_response(template, status_code=200, headers=None)
+        if request.method == "GET":
+            return self.make_html_response(response)
+        else:
+            return self.make_response(content=response, status_code=200)
 
+    # return self.make_response(template, status_code=200, headers=None)
 
+    @endpoint("/css/{file_name}", methods=["GET"])
+    def handle_css(self, file_name: str):
 
+        with open(f'{self._template_prefix}/src/web/css/{file_name}', 'r') as reader:
+            return self.make_html_response(reader.read())
 
+    @endpoint("/js/{file_name}", methods=["GET"])
+    def handle_js(self, file_name: str):
+
+        with open(f'{self._template_prefix}/src/web/js/{file_name}', 'r') as reader:
+            return self.make_html_response(reader.read())
 
     @endpoint("/web", methods=["GET"])
     def index(self):
         myTemplate = Template(filename=self._template_prefix + "src/templates/index.html")
-        return self.make_response(myTemplate, status_code=200, headers=None)
+        dir_content = _list("./", [])
+        # print(str(dir_content))
+        # return self.make_html_response(str(dir_content))
+        return self.make_html_response(myTemplate.render(fields=[], fields_data=self._get_fields_data(), lang=lang))
 
-    @endpoint("/web/advertisement-form", methods=["GET"])
-    def advertisement_form(self):
-        myTemplate = Template(filename=self._template_prefix + "src/templates/advertisement-form.html")
-        fields = [key for key in AdvertisementRequest.__dict__["__fields__"].keys() if key != 'id']
-        return self.make_html_response(myTemplate.render(fields=fields, fields_data=self._get_fields_data(), lang=lang))
+    @endpoint("/file/presigned_upload_link", methods=["GET"])
+    def advertisement_form(self, file_name, mime):
+        controller = FileController()
+        return self.make_response(content=controller.presigned_url(name=""), status_code=200)
 
-    @endpoint("/web/store-item-form", methods=["POST"])
-    def store_item_form(self):
-        myTemplate = Template(filename=self._template_prefix + "src/templates/storeItem-form.html")
-        fields = [key for key in StoreItemRequest.__dict__["__fields__"].keys() if key != 'id']
-        return self.make_html_response(myTemplate.render(fields=fields, fields_data=self._get_fields_data(), lang=lang))
-
-    def _get_fields_data(self):
-        fields_data = {
-            "categorySex": {"type": "select",
-                            "values": [item for item in CategorySex],
-                            "default": "not-applicable"},
-            "categoryType": {"type": "select",
-                             "values": [item for item in CategoryType],
-                             "default": "others"},
-            "season": {"type": "select",
-                       "values": [item for item in SeasonEnum],
-                       "default": "undefined"},
-            "description": {"type": "textarea"},
-            "publishedDate": {"type": "date",
-                              "default": "DD/MM/YYYY"},
-            "soldDate": {"type": "date",
-                         "default": "DD/MM/YYYY",
-                         "hidden": True
-                         },
-            "postage": {"hidden": True,
-                        "default": "0"
-                        },
-            "givenPrice": {"hidden": True,
-                           "default": "0"}
-
-        }
-        return fields_data
+    def _snake_to_camel_case(self, controller_name):
+        if controller_name.find('_') != -1 or controller_name.find('-') != -1:
+            camel_name = ''.join([w.capitalize() for w in controller_name.split('_')])
+            camel_name2 = ''.join([w.capitalize() for w in camel_name.split('-')])
+            return camel_name2
+        return controller_name

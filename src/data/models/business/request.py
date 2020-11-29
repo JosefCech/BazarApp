@@ -21,7 +21,7 @@ class Response(BaseModel):
     headers: Dict[str, List[str]] = None
 
 
-class WebRequest:
+class WebRequest(NamedTuple):
     endpoint: str
     path: Optional[dict]
     method: str

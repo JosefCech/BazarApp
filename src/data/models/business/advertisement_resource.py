@@ -1,65 +1,10 @@
 from datetime import datetime
-from enum import Enum
-from typing import Optional, List
+from typing import Optional
 from uuid import uuid4
 
 from pydantic import BaseModel
 
-
-class StrEnum(str, Enum):
-    pass
-
-
-class StoreItemStatus(Enum):
-    CREATED = 'created'
-
-    PUBLISHED = 'published'
-    RESERVED = 'reserved'
-    SOLD = 'sold'
-    SWAPPED = 'swapped'
-
-
-class StoreItemState(BaseModel):
-    status: str
-    start_at: str
-
-
-class CategorySex(StrEnum):
-    BOY = "boy"
-    GIRL = 'girl'
-    BOTH = "unisex"
-    WOMEN = 'women'
-    NA = 'not-applicable'
-
-
-class CategoryType(StrEnum):
-    CLOTHES = 'clothes'
-    SHOES = 'shoes'
-    OTHER = 'other'
-
-
-class SeasonEnum(StrEnum):
-    WINTER = 'winter'
-    SUMMER = 'summer'
-    ALL = 'whole-year'
-    UNDEFINED = 'undefined'
-
-
-class StoreItemRequest(BaseModel):
-    id: str
-    name: str
-    categorySex: CategorySex = CategorySex.NA
-    categoryType: CategoryType = CategoryType.OTHER
-    categorySubtype: str = 'undefined'
-    brand: str = 'undefined'
-    season: SeasonEnum = SeasonEnum.UNDEFINED
-    size: str = 'undefined'
-    originalPrice: Optional[float]
-    boughtPrice: Optional[float]
-
-
-class StoreItemResource(StoreItemRequest):
-    createdAt : str
+from src.data.models.business.store_item import CategorySex, CategoryType, SeasonEnum
 
 
 class AdvertisementRequest(BaseModel):
