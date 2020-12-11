@@ -266,19 +266,7 @@ ${value}
 	</form>
 
 	<script type="text/javascript">
-		$(function() {
-			$('#file_upload').uploadifive({
-				'auto'             : false,
-				'checkScript'      : 'check-exists.php',
-				'formData'         : {
-									   'timestamp' : '<?php echo $timestamp;?>',
-									   'token'     : '<?php echo md5('unique_salt' . $timestamp);?>'
-				                     },
-				'queueID'          : 'queue',
-				'uploadScript'     : 'uploadifive.php',
-				'onUploadComplete' : function(file, data) { console.log(data); }
-			});
-		});
+
 	</script>
 
 </body>

@@ -11,7 +11,7 @@ class FileController(BaseController):
         try:
             response = s3_client.generate_presigned_post(bucket_name,
                                                          object_name,
-                                                         ExpiresIn="600")
+                                                         ExpiresIn=600)
         except ClientError as e:
             print(e)
             return None

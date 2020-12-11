@@ -1,4 +1,5 @@
 import http.server
+import os
 import socketserver
 
 import punq
@@ -34,7 +35,8 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
                  'params': {'path': {'controller': 'store-items', 'view': None}, 'querystring': {}, 'header': {}},
                  'stage-variables': {}, 'httpMethod': 'GET'}
 
-        event_css = {'body-json': {}, 'params': {'path': {'file_name': 'uploadifive.css'}, 'querystring': {}, 'header': {}},
+        event_css = {'body-json': {},
+                     'params': {'path': {'file_name': 'uploadifive.css'}, 'querystring': {}, 'header': {}},
                      'stage-variables': {},
                      'resource': '/css/{file_name}',
                      'httpMethod': 'GET',
@@ -93,10 +95,25 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             },
             "httpMethod": "PUT"
         }
+        event_preserve_link = {'body-json': {},
+                               'params': {'path': {}, 'querystring': {'file_name': 'test', 'mime': 'png'},
+                                          'header': {}}, 'stage-variables': {},
+                               'resource': '/file/presigned_upload_link', 'httpMethod': 'GET',
+                               'context': {'account-id': '056695529414', 'api-id': 'qasi12d9c2',
+                                           'api-key': 'test-invoke-api-key', 'authorizer-principal-id': '',
+                                           'caller': '056695529414', 'cognito-authentication-provider': '',
+                                           'cognito-authentication-type': '', 'cognito-identity-id': '',
+                                           'cognito-identity-pool-id': '', 'http-method': 'GET',
+                                           'stage': 'test-invoke-stage', 'source-ip': 'test-invoke-source-ip',
+                                           'user': '056695529414',
+                                           'user-agent': 'aws-internal/3 aws-sdk-java/1.11.864 Linux/4.9.217-0.3.ac.206.84.332.metal1.x86_64 OpenJDK_64-Bit_Server_VM/25.262-b10 java/1.8.0_262 vendor/Oracle_Corporation',
+                                           'user-arn': 'arn:aws:iam::056695529414:root',
+                                           'request-id': '84083862-b156-4708-8b34-3b2ca5130da0',
+                                           'resource-id': '0q30ez', 'resource-path': '/file/presigned_upload_link'}}
         if "css" in self.path:
             response = handler.handle(event_css, None)
         else:
-            response = (handler.common_handle(event_to_web_request(event_update)))
+            response = (handler.handle(event_update , None))
         print("test")
         print(response)
 

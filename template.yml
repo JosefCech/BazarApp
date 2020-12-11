@@ -13,43 +13,11 @@ Parameters:
       - prod
 
 
-PhotoS3Bucket:
-    Type: 'AWS::S3::Bucket'
-    Properties:
-      BucketName: !Sub "bazara-photos-{Environment}"
-      CorsConfiguration:
-        CorsRules:
-          - AllowedHeaders:
-              - '*'
-            AllowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-            AllowedOrigins:
-              - '*'
-            ExposedHeaders:
-              - Date
-            Id: myCORSRuleId1
-            MaxAge: '3600'
-          - AllowedHeaders:
-              - x-amz-*
-            AllowedMethods:
-              - DELETE
-            AllowedOrigins:
-              - '*'
-            ExposedHeaders:
-              - Connection
-              - Server
-              - Date
-            Id: myCORSRuleId2
-            MaxAge: '1800'
-
 Resources:
   PhotoS3Bucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: !Sub "bazara-photos-{Environment}"
+      BucketName: !Sub "bazar-photos-${Environment}"
       CorsConfiguration:
         CorsRules:
           - AllowedHeaders:
@@ -65,18 +33,7 @@ Resources:
               - Date
             Id: myCORSRuleId1
             MaxAge: '3600'
-          - AllowedHeaders:
-              - x-amz-*
-            AllowedMethods:
-              - DELETE
-            AllowedOrigins:
-              - '*'
-            ExposedHeaders:
-              - Connection
-              - Server
-              - Date
-            Id: myCORSRuleId2
-            MaxAge: '1800'
+
 
   ApiGatewayAdvertisementRestApi:
     Type: AWS::ApiGateway::RestApi
@@ -760,7 +717,7 @@ Resources:
                 httpMethod: POST
                 passthroughBehavior: when_no_match
                 type: AWS_PROXY
-                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerApp.Arn}/invocations'
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerWeb.Arn}/invocations'
                 requestTemplates:
                   application/json: $input.body
               tags:
@@ -1117,13 +1074,15 @@ Resources:
 #      Path: '/'
 
   BazaarServerWeb:
+    DependsOn:
+      - PhotoS3Bucket
     Type: AWS::Serverless::Function
     Properties:
       Runtime: python3.8
       CodeUri:
         Bucket: 'bazaar-app-lambda'
         Key: !Sub 'output.zip'
-      Handler: src.web.handle_test
+      Handler: src.web_server.handle_test
       MemorySize: 256
       Environment:
         Variables:

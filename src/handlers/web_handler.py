@@ -4,15 +4,12 @@ from mako import exceptions
 from mako.template import Template
 from punq import Container
 
-from src.data.models.business.advertisement_resource import AdvertisementRequest, CategorySex, CategoryType, SeasonEnum
+from src.config import config
 from src.data.models.business.request import WebRequest
-from src.data.models.business.store_item_resource import StoreItemResourceRequest, StoreItemResourceResponse
+from src.data.models.business.store_item_resource import StoreItemResourceRequest
 from src.data.models.transform.event_to_request import event_to_web_request
-
 from src.handlers.base_handler import endpoint, BaseHandler
 from src.localization.cz.advertisement import lang
-
-from src.web.controllers.advertisement_controller import AdvertisementController
 from src.web.controllers.file_controller import FileController
 from src.web.controllers.store_item_controller import StoreItemController
 
@@ -34,6 +31,7 @@ class WebHandler(BaseHandler):
         self._template_prefix = template_prefix
         self._container = Container()
         self._container.register("StoreItemsController", StoreItemController, template_prefix=template_prefix)
+        self._config = config
 
     def common_handle(self, request: WebRequest):
         controller_name = self._snake_to_camel_case(request.path["controller"]) + 'Controller'
@@ -83,9 +81,11 @@ class WebHandler(BaseHandler):
         return self.make_html_response(myTemplate.render(fields=[], fields_data=self._get_fields_data(), lang=lang))
 
     @endpoint("/file/presigned_upload_link", methods=["GET"])
-    def advertisement_form(self, file_name, mime):
+    def preserve_link(self, file_name, mime):
         controller = FileController()
-        return self.make_response(content=controller.presigned_url(name=""), status_code=200)
+        return self.make_response(
+            content=controller.presigned_upload(bucket_name=self._config.get("ImageS3Bucket"), object_name=file_name),
+            status_code=200)
 
     def _snake_to_camel_case(self, controller_name):
         if controller_name.find('_') != -1 or controller_name.find('-') != -1:
