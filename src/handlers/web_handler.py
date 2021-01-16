@@ -5,7 +5,7 @@ from mako.template import Template
 from punq import Container
 
 from src.config import config
-from src.data.models.business.request import WebRequest
+from src.data.models.business.request import WebRequest, Response
 from src.data.models.business.store_item_resource import StoreItemResourceRequest
 from src.data.models.transform.event_to_request import event_to_web_request
 from src.handlers.base_handler import endpoint, BaseHandler
@@ -72,6 +72,26 @@ class WebHandler(BaseHandler):
         with open(f'{self._template_prefix}/src/web/js/{file_name}', 'r') as reader:
             return self.make_html_response(reader.read())
 
+    @endpoint("/img/{store_item_id}/{file_name}", methods=["GET"])
+    def handle_img(self, store_item_id: str, file_name: str):
+        return {
+             'headers': {'Location': f'https://{config["ImageS3Bucket"]}.s3.amazonaws.com/{store_item_id}/{file_name}'},
+             'statusCode': 302,
+             'body': f'https://{config["ImageS3Bucket"]}.s3.amazonaws.com/{store_item_id}/{file_name}',
+             'isBase64Encoded': False
+        }
+
+
+
+        # return {
+        #     'headers': {"Content-Type": "image/png"},
+        #     'statusCode': 200,
+        #     'body': base64.b64encode(image_bytes),
+        #     'isBase64Encoded': True
+        # }
+
+        # return self.make_raw_response(content=base64.b64encode(image_bytes), headers={"Content-Type": ["image/jpeg"]})
+
     @endpoint("/web", methods=["GET"])
     def index(self):
         myTemplate = Template(filename=self._template_prefix + "src/templates/index.html")
@@ -80,8 +100,8 @@ class WebHandler(BaseHandler):
         # return self.make_html_response(str(dir_content))
         return self.make_html_response(myTemplate.render(fields=[], fields_data=self._get_fields_data(), lang=lang))
 
-    @endpoint("/file/presigned_upload_link", methods=["GET"])
-    def preserve_link(self, file_name, mime):
+    @endpoint("/file/presigned_upload_link/{file_name}", methods=["GET"])
+    def preserve_link(self, file_name):
         controller = FileController()
         return self.make_response(
             content=controller.presigned_upload(bucket_name=self._config.get("ImageS3Bucket"), object_name=file_name),

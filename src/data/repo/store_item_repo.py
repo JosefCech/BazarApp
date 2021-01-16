@@ -1,9 +1,9 @@
 from src.data.models.business.page import Page
 from src.data.models.business.store_item import StoreItemDocument
-from src.data.repo.base_repo import BaseRepo
+from src.data.repo.base_dynamo_repo import BaseDynamoRepo
 
 
-class StoreItemRepo(BaseRepo):
+class StoreItemRepo(BaseDynamoRepo):
     def __init__(self, store_item_table):
         self._store_item_table = store_item_table
 

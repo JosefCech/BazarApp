@@ -3,11 +3,13 @@ from typing import List
 from mako.template import Template
 from pydantic import BaseModel
 
+from src.config import config
 from src.data.models.business.store_item import CategorySex, CategoryType, SeasonEnum, ClothesSizeEnum
 from src.data.models.business.store_item_resource import StoreItemResourceResponse, StoreItemResourceRequest, \
-    AdvertisementRequest, SoldItemRequest, ClothesSizeRequest
+    AdvertisementRequest, SoldItemRequest, ClothesSizeRequest, StoreItemPhotos
 from src.data.rest.rest_resource_client import RestResourceClient
 from src.web.controllers.base_controller import BaseController
+from src.web.controllers.file_controller import FileController
 
 
 class StoreItemResponseWrapper(StoreItemResourceResponse):
@@ -39,6 +41,7 @@ class StoreItemController(BaseController):
     def __init__(self, template_prefix="./"):
         self._rest_client = RestResourceClient("https://jgfnvpor2j.execute-api.eu-west-1.amazonaws.com/v0",
                                                StoreItemResourceResponse)
+
         self._endpoint = "store-items"
         self._request = StoreItemResourceRequest
         super().__init__(template_prefix, "storeItems")
@@ -59,13 +62,16 @@ class StoreItemController(BaseController):
             kwargs["update_object"]["is_sold"] = self._is_sold(store_item_response)
             kwargs["update_object"]["is_advertised"] = self._is_advertised(store_item_response)
             kwargs["update_object"]["have_size"] = self._have_size(store_item_response)
-            print(store_item_response)
+            photo_client = RestResourceClient(f"https://jgfnvpor2j.execute-api.eu-west-1.amazonaws.com/v0/store-items/{store_item_id}",
+                                              str)
+            kwargs["update_object"]["photo"] = photo_client.get("photo").items
+            controller = FileController()
+            kwargs["update_object"]["upload"] = controller.presigned_upload(bucket_name=config.get("ImageS3Bucket"), object_name=f"{store_item_id}/test1.jpg")
+            print(kwargs)
 
         kwargs['fields_data'] = self._get_fields_data()
         kwargs['fields'] = [key for key in StoreItemResourceRequest.__dict__["__fields__"].keys() if key != 'id']
-        for x in kwargs['fields']:
-            if x not in kwargs["fields_data"]:
-                print(x)
+
 
         return myTemplate.render(**kwargs)
 

@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Update / new item</title>
-    <script src="/v0/js/jquery.uploadifive.min.js" type="text/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+    <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+    <script src="/v0/js/jquery.uploadifive.min.js" type="text/javascript"></script>-->
     <link rel="stylesheet" type="text/css" href="/v0/css/uploadifive.css">
+    <link rel="stylesheet" href="/v0/css/responsiveslides.css">
+    <link rel="stylesheet" href="/v0/css/demo.css">
+    <script src="/v0/js/responsiveslides.min.js"></script>
     <style type="text/css">
 .form-style-7{
 	max-width:400px;
@@ -159,8 +164,17 @@ a.button3:hover
 
 
     </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  	<script type="text/javascript">
+$(function () {
 
+  // Slideshow 1
+  $("#slider1").responsiveSlides({
+        pager: true,
+        speed: 300,
+        maxwidth: 540});
+
+ });
+	</script>
 </head>
 <body>
 <%def name="build_label(label_for, value)">
@@ -203,6 +217,15 @@ ${value}
 
 <a class="button3" href="../store-items"> Back </a>
 
+  <!-- Slideshow 1 -->
+    % if update_object.get("photo") :
+    <ul class="rslides" id="slider1">
+        % for photo in update_object.get("photo") :
+      <li><img src="/v0/img/${photo}" alt=""></li>
+        % endfor
+    </ul>
+    % endif
+
 <form id="store-items-form" class="form-style-7">
     % for field in fields:
     % if fields_data.get(field) and not fields_data.get(field).get('hidden') and not fields_data.get(field).get('type')  == 'inner' :
@@ -230,7 +253,7 @@ ${value}
     % for inner_field in fields_data.get(field).get('inner_field_list'):
      % if  fields_data.get(inner_field) is None or not fields_data.get(inner_field).get('hidden') :
         <li id="li_${field}_${inner_field}"
-             % if not update_object.get(fields_data.get(field).get('check_value')) :
+            % if not update_object.get(fields_data.get(field).get('check_value')) :
                 style="display:none"
             % endif
             >
@@ -259,18 +282,37 @@ ${value}
     </ul>
 </form>
 
-<form>
-		<div id="queue"></div>
-		<input id="file_upload" name="file_upload" type="file" multiple="true">
-		<a style="position: relative; top: 8px;" href="javascript:$('#file_upload').uploadifive('upload')">Upload Files</a>
-	</form>
+    <form id="add-image" action="${update_object.get('upload')['url']}" method="post" enctype="multipart/form-data">
+        % for key in update_object.get('upload')['fields']:
+            <input type="hidden" name="${key}" value="${update_object.get('upload')['fields'][key]}"/>
+        % endfor
+         File:
+        <input type="file" name="file"/> <br/>
+        <input type="submit" name="submit" value="Upload to Amazon S3" onclick="return UploadImage(this.form)" />
+       <!-- <a style="position: relative; top: 8px;" href="javascript:$('#file_upload').uploadifive('upload')">Upload Files</a> -->
+    </form>
 
-	<script type="text/javascript">
 
-	</script>
+
 
 </body>
 <script type="text/javascript">
+
+
+function UploadImage(form) {
+     $("#add-image").submit();
+    alert("adding new file succesfull!")
+    $('ul#slider1 li').remove();
+    $("#slider1").append('<li><img src="/v0/img/887e85a8-0888-4325-bec9-4d6fee23b70b/test1.jpg" alt=""></li>');
+    $("#slider1").removeClass("rslider1")
+    $("ul.rslides_tabs").remove()
+    $("#slider1").responsiveSlides({
+        pager: true,
+        speed: 300,
+        maxwidth: 540});
+    $("#add-image").reset();
+
+}
 
 
 function switch_visibility(main, affected_items) {
@@ -387,7 +429,7 @@ function validation_fields(){
 
 function hide_fields() {
 
-     % for field in fields:
+     %for field in fields:
 
                 $("#li_${field} span").hide()
 
@@ -416,17 +458,14 @@ function validateDate(dateString) {
                 $("#${field}").focusout(function(){
                     var dateString = $(this).val()
                     if (validateDate(dateString)==0)
+                    {
                        $(this).focus()
+                     }
                 });
              %endif
-  %endfor
+ % endfor
 
 hide_fields()
 
-
-
-
-
 </script>
 </html>
-

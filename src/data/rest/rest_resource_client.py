@@ -18,9 +18,15 @@ class RestResourceClient:
 
     def get(self, endpoint: str, params: dict = {}, headers: dict = {}):
         url = self._get_url(endpoint)
+        print(url)
         response = requests.get(url=url, headers=headers)
-        return Page(items=[self._result_trans(**item) for item in response.json()["items"]],
-                    next_link=response.json()["next_link"])
+        print(response)
+        if self._result_trans == str:
+            return Page(items=response.json()["items"],
+                        next_link=response.json()["next_link"])
+        else:
+            return Page(items=[self._result_trans(**item) for item in response.json()["items"]],
+                        next_link=response.json()["next_link"])
 
     def get_by_id(self, endpoint: str, params: dict = {}, headers: dict = {}):
         url = self._get_url(endpoint)

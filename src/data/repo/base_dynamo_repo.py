@@ -4,7 +4,7 @@ from decimal import Decimal
 from typing import Callable
 
 
-class BaseRepo():
+class BaseDynamoRepo():
 
 
     def _encode_last_evaluted_key(self, last_evaluated_key):

@@ -1,8 +1,8 @@
 from src.data.models.business.advertisement_resource import AdvertisementResource, Advertisements
-from src.data.repo.base_repo import BaseRepo
+from src.data.repo.base_dynamo_repo import BaseDynamoRepo
 
 
-class AdvertisementRepo(BaseRepo):
+class AdvertisementRepo(BaseDynamoRepo):
     def __init__(self, advertisement_table):
         self._advertisement_table = advertisement_table
 

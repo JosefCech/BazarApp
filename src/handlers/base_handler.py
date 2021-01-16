@@ -81,5 +81,8 @@ class BaseHandler:
 
         return Response(body=strigified_body, statusCode=status_code, headers=headers).dict()
 
+    def make_raw_response(self, content: Any, status_code=200, headers={}) -> Response:
+        return Response(body=content, statusCode=status_code, headers=headers).dict()
+
     def common_handle(self, request):
         raise NotImplementedError

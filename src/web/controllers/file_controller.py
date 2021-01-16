@@ -18,3 +18,10 @@ class FileController(BaseController):
 
         # The response contains the presigned URL and required fields
         return response
+
+    def read_bytes(self, bucket_name, key, session=boto3):
+        s3_client = session.client('s3')
+        s3_object = s3_client.get_object(Bucket=bucket_name, Key=key)
+        body = s3_object['Body']
+        return body.read()
+

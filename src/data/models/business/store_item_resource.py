@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from pydantic import BaseModel
 
-from src.data.models.business.store_item import CategorySex, CategoryType, ClothesSize, ClothesSizeEnum
+from src.data.models.business.store_item import CategorySex, CategoryType, ClothesSizeEnum
 
 
 class SoldItemRequest(BaseModel):
@@ -44,7 +44,7 @@ class StoreItemResourceRequest(BaseModel):
 
 
 class StoreItemResourceResponse(StoreItemResourceRequest):
-    lastUpdateAt: str
+    lastUpdateAt: Optional[str]
 
 
 class StoreItemRequest(BaseModel):
@@ -66,6 +66,11 @@ class StoreItemAdvertisementRequest(StoreItemRequest):
 
 class StoreItemAdvertisementRequest(StoreItemResourceRequest):
     soldInfo: Optional[SoldItemRequest]
+
+
+class StoreItemPhotos(BaseModel):
+    items: list
+    next_link: Optional[str]
 
 
 def create_dummy_store_item_simple():

@@ -5,7 +5,9 @@ import punq
 
 from src.analytics.advertisements_analytics import AdvertisementsAnalytics
 from src.analytics.advertisements_calculation import AdvertisementsCalculation
+from src.config import config
 from src.data.repo.advertisement_repo import AdvertisementRepo
+from src.data.repo.file_repo import FileRepo
 from src.data.repo.store_item_repo import StoreItemRepo
 from src.handlers.advertisement_handler import AdvertisementHandler
 from src.handlers.store_item_handler import StoreItemHandler
@@ -35,6 +37,7 @@ def set_dependency(container, boto_session=boto3):
     container.register(AdvertisementsAnalytics, AdvertisementsAnalytics)
     container.register(AdvertisementRepo, AdvertisementRepo, advertisement_table=advertisement_name)
     container.register(StoreItemRepo, StoreItemRepo, store_item_table=store_item_table)
+    container.register(FileRepo,FileRepo,bucket_name=config["ImageS3Bucket"])
     container.register(AdvertisementHandler, AdvertisementHandler)
     container.register(StoreItemHandler, StoreItemHandler)
     return container

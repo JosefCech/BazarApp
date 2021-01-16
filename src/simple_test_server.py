@@ -32,7 +32,6 @@ def set_dependency(container, boto_session=boto3):
     return container
 
 
-
 class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
     def do_GET(self):
@@ -44,6 +43,11 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         self.send_response(200)
         self.end_headers()
         self.wfile.write(str(handler.store_item_form()).encode())
+
+    def do_POST(self):
+        content_len = int(self.headers.get('Content-Length'))
+        post_body = self.rfile.read(content_len)
+        print(post_body)
 
 
 Handler = SimpleHTTPRequestHandler

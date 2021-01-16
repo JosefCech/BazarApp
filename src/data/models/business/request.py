@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional, NamedTuple
+from typing import List, Dict, Optional, NamedTuple, Union
 
 from pydantic import BaseModel
 
@@ -16,9 +16,10 @@ class Request(NamedTuple):
 
 
 class Response(BaseModel):
-    body: str
+    body: Union[str, bytes]
     statusCode: int
     headers: Dict[str, List[str]] = None
+
 
 
 class WebRequest(NamedTuple):
