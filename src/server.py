@@ -37,7 +37,7 @@ def set_dependency(container, boto_session=boto3):
     container.register(AdvertisementsAnalytics, AdvertisementsAnalytics)
     container.register(AdvertisementRepo, AdvertisementRepo, advertisement_table=advertisement_name)
     container.register(StoreItemRepo, StoreItemRepo, store_item_table=store_item_table)
-    container.register(FileRepo,FileRepo,bucket_name=config["ImageS3Bucket"])
+    container.register(FileRepo, FileRepo, bucket_name=config["ImageS3Bucket"])
     container.register(AdvertisementHandler, AdvertisementHandler)
     container.register(StoreItemHandler, StoreItemHandler)
     return container

@@ -26,3 +26,6 @@ class FileRepo():
                 continue
             files.append(obj['Key'])
         return files
+
+    def put_file(self, file='test1', content=None):
+        self._s3_client.put_object(Body=content, Bucket=self._bucket_name, Key=file)

@@ -277,6 +277,7 @@ Resources:
                   description: resource
                   schema:
                     type: object
+
       EndpointConfiguration:
         Types:
           - EDGE
@@ -833,7 +834,101 @@ Resources:
                   description: resource
                   schema:
                     type: object
-
+          /file/upload:
+            post:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                passthroughBehavior: when_no_match
+                type: aws
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerWeb.Arn}/invocations'
+                requestTemplates:
+                  multipart/form-data: |
+                    #set($allParams = $input.params())
+                    {
+                    "body-json" : $input.json('$'),
+                    "params" : {
+                    #foreach($type in $allParams.keySet())
+                        #set($params = $allParams.get($type))
+                    "$type" : {
+                        #foreach($paramName in $params.keySet())
+                        "$paramName" : "$util.escapeJavaScript($params.get($paramName))"
+                            #if($foreach.hasNext),#end
+                        #end
+                    }
+                        #if($foreach.hasNext),#end
+                    #end
+                    },
+                    "stage-variables" : {
+                    #foreach($key in $stageVariables.keySet())
+                    "$key" : "$util.escapeJavaScript($stageVariables.get($key))"
+                        #if($foreach.hasNext),#end
+                    #end
+                    },
+                    "resource" : "$context.resourcePath",
+                    "path" : "$context.resourcePath",
+                    "httpMethod" : "$context.httpMethod"
+                    }
+              tags:
+                - "file"
+                - "presigned_upload_link"
+              description: "Upload link for file"
+              consumes:
+                - "application/image"
+              produces:
+                - "application/json"
+              responses:
+                '200':
+                  description: resource
+                  schema:
+                    type: object
+          /file/upload/{store_item_id}:
+            post:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                passthroughBehavior: when_no_match
+                type: aws
+                uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BazaarServerWeb.Arn}/invocations'
+                requestTemplates:
+                  multipart/form-data: |
+                    #set($allParams = $input.params())
+                    {
+                    "body-json" : $input.json('$'),
+                    "params" : {
+                    #foreach($type in $allParams.keySet())
+                        #set($params = $allParams.get($type))
+                    "$type" : {
+                        #foreach($paramName in $params.keySet())
+                        "$paramName" : "$util.escapeJavaScript($params.get($paramName))"
+                            #if($foreach.hasNext),#end
+                        #end
+                    }
+                        #if($foreach.hasNext),#end
+                    #end
+                    },
+                    "stage-variables" : {
+                    #foreach($key in $stageVariables.keySet())
+                    "$key" : "$util.escapeJavaScript($stageVariables.get($key))"
+                        #if($foreach.hasNext),#end
+                    #end
+                    },
+                    "resource" : "$context.resourcePath",
+                    "path" : "$context.resourcePath",
+                    "httpMethod" : "$context.httpMethod"
+                    }
+              tags:
+                - "file"
+                - "presigned_upload_link"
+              description: "Upload link for file"
+              consumes:
+                - "application/image"
+                - "multipart/form-data"
+              produces:
+                - "application/json"
+              responses:
+                '200':
+                  description: resource
+                  schema:
+                    type: object
       EndpointConfiguration:
         Types:
           - EDGE

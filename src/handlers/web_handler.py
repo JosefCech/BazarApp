@@ -1,3 +1,4 @@
+import base64
 import os
 
 from mako import exceptions
@@ -8,10 +9,12 @@ from src.config import config
 from src.data.models.business.request import WebRequest, Response
 from src.data.models.business.store_item_resource import StoreItemResourceRequest
 from src.data.models.transform.event_to_request import event_to_web_request
+from src.data.repo.file_repo import FileRepo
 from src.handlers.base_handler import endpoint, BaseHandler
 from src.localization.cz.advertisement import lang
 from src.web.controllers.file_controller import FileController
 from src.web.controllers.store_item_controller import StoreItemController
+from requests_toolbelt.multipart import decoder
 
 
 def _list(basepath, result):
@@ -26,12 +29,13 @@ def _list(basepath, result):
 
 
 class WebHandler(BaseHandler):
-    def __init__(self, template_prefix="./"):
+    def __init__(self, file_repo: FileRepo, template_prefix="./"):
         super().__init__(request_transformation=event_to_web_request)
         self._template_prefix = template_prefix
         self._container = Container()
         self._container.register("StoreItemsController", StoreItemController, template_prefix=template_prefix)
         self._config = config
+        self._file_repo = file_repo
 
     def common_handle(self, request: WebRequest):
         controller_name = self._snake_to_camel_case(request.path["controller"]) + 'Controller'
@@ -75,13 +79,11 @@ class WebHandler(BaseHandler):
     @endpoint("/img/{store_item_id}/{file_name}", methods=["GET"])
     def handle_img(self, store_item_id: str, file_name: str):
         return {
-             'headers': {'Location': f'https://{config["ImageS3Bucket"]}.s3.amazonaws.com/{store_item_id}/{file_name}'},
-             'statusCode': 302,
-             'body': f'https://{config["ImageS3Bucket"]}.s3.amazonaws.com/{store_item_id}/{file_name}',
-             'isBase64Encoded': False
+            'headers': {'Location': f'https://{config["ImageS3Bucket"]}.s3.amazonaws.com/{store_item_id}/{file_name}'},
+            'statusCode': 302,
+            'body': f'https://{config["ImageS3Bucket"]}.s3.amazonaws.com/{store_item_id}/{file_name}',
+            'isBase64Encoded': False
         }
-
-
 
         # return {
         #     'headers': {"Content-Type": "image/png"},
@@ -106,6 +108,18 @@ class WebHandler(BaseHandler):
         return self.make_response(
             content=controller.presigned_upload(bucket_name=self._config.get("ImageS3Bucket"), object_name=file_name),
             status_code=200)
+
+    @endpoint("/file/upload/{store_item_id}", methods=["POST"])
+    def upload_file(self, store_item_id: str, request: WebRequest):
+        print(store_item_id)
+        file_content = base64.b64decode(request.body).decode('iso-8859-1')
+        file_data = []
+        for part in decoder.MultipartDecoder(file_content.encode('utf-8'), request.headers.get("content-type")).parts:
+            for header in part.headers:
+                print(f'{header} - value : {part.headers[header]}')
+            file_data.append(part.text)
+
+        self._file_repo.put_file(file=f"{store_item_id}/{file_data[0]}", content=file_data[1].encode('iso-8859-1'))
 
     def _snake_to_camel_case(self, controller_name):
         if controller_name.find('_') != -1 or controller_name.find('-') != -1:

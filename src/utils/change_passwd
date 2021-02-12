@@ -1,0 +1,56 @@
+import base64
+import hashlib
+import hmac
+
+import boto3
+
+
+identity_pool_id = 'eu-west-1_TRs7CTjJk'
+app_client_id = '2tturc2a1p6t1bjuseb9uv11cj'
+username = 'testuser2'
+password = 'admin1234'
+new_password = 'newadmin1234'
+CLIENT_SECRET="csc7hafd2lcf8b86qso4tq8tsq49anivi3q1sfktf83on9h07ts"
+
+def get_secret_hash(username):
+    msg = username + app_client_id
+    digest = hmac.new(
+        str(CLIENT_SECRET).encode('utf-8'),
+        msg = str(msg).encode('utf-8'),
+        digestmod=hashlib.sha256
+    ).digest()
+    hash = base64.b64encode(digest).decode()
+
+    print("secret hash for cognito UP is [{0}]".format(hash))
+    return hash
+
+cognitoclient = boto3.client('cognito-idp',region_name="eu-west-1")
+
+try:
+    response = cognitoclient.initiate_auth(
+        ClientId=app_client_id,
+        AuthFlow='USER_PASSWORD_AUTH',
+        AuthParameters={
+            'USERNAME': username,
+            "SECRET_HASH" : get_secret_hash(username),
+            'PASSWORD': password
+        }
+    )
+    print(response)
+    session_id = response['Session']
+
+    response = cognitoclient.respond_to_auth_challenge(
+
+        ClientId=app_client_id,
+
+        ChallengeName='NEW_PASSWORD_REQUIRED',
+
+        Session=session_id,
+
+        ChallengeResponses={'NEW_PASSWORD': new_password, 'USERNAME': username,  "SECRET_HASH" : get_secret_hash(username),})
+
+    access_token = response['AuthenticationResult']['AccessToken']
+    print(response)
+    print(session_id)
+except Exception as e:
+    print(e)

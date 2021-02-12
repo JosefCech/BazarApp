@@ -1,5 +1,6 @@
 import punq
 
+from src.data.repo.file_repo import FileRepo
 from src.handlers.web_handler import WebHandler
 
 
@@ -20,6 +21,7 @@ container = None
 
 def set_dependency(container):
     container.register(WebHandler, WebHandler)
+    container.register(FileRepo, FileRepo, bucket_name="bazar-photos-test")
     return container
 
 

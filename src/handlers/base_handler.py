@@ -39,6 +39,8 @@ def _create_wrapper(method):
                 request_json = json.loads(request.body)
                 new_value = param_annotation(**request_json)
                 new_kwargs[key] = new_value
+            elif key == "request":
+                new_kwargs[key] = request
             else:
                 new_value = request.parameters.get(key, None)
                 if new_value:
